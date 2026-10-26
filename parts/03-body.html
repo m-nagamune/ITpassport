@@ -1,0 +1,36 @@
+<body>
+<div class="app-shell">
+  <aside class="spine" id="spine" aria-label="サイドバー">
+    <a class="brand" href="#/home" data-nav="home">
+      <span class="b-main">ITパスポート</span>
+      <span class="b-sub">Study Notebook</span>
+      <span class="b-rule"></span>
+    </a>
+    <nav id="sidebar-nav" aria-label="メインナビゲーション"></nav>
+    <div class="spine-foot">
+      <span class="count-num" id="spine-qcount">0</span>
+      <span class="count-label">収録問題数</span>
+      <div style="margin-top:8px" id="spine-streak"></div>
+    </div>
+  </aside>
+  <div class="scrim" id="scrim"></div>
+
+  <div class="main-wrap">
+    <header class="topbar">
+      <button class="btn btn-sm btn-ghost" id="menu-btn" aria-label="メニューを開く" style="padding:6px 8px">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+      <span class="tb-title" id="tb-title">ホーム</span>
+      <span class="tb-days" id="tb-days"></span>
+    </header>
+    <main id="view" tabindex="-1"></main>
+  </div>
+</div>
+
+<nav class="tabbar" id="tabbar" aria-label="タブバー"></nav>
+
+<div class="modal-back" id="modal-back">
+  <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title"></div>
+</div>
+
+<div id="toast" role="status" aria-live="polite"><div class="t-in" id="toast-in"></div></div>

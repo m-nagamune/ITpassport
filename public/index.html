@@ -1,0 +1,3262 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#2f4f4a">
+<title>ITパスポート 学習ノート</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%232f4f4a'/%3E%3Cpath d='M8 9h7l2 2h7v13H8z' fill='%23f6f2e7'/%3E%3Cpath d='M11 14h10M11 18h7' stroke='%232f4f4a' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E">
+<meta name="description" content="ITパスポート試験の学習アプリ。4択演習・分野別分析・学習ロードマップ・用語カードを1つのHTMLファイルで。">
+<style>
+/* ============================================================
+   ITパスポート 学習ノート — 文具・ノート風デザイン
+   外部依存なし / オフライン動作
+   ============================================================ */
+:root{
+  --paper:#f6f2e7;
+  --paper-2:#fffdf7;
+  --paper-3:#efe9da;
+  --ink:#2c2a26;
+  --ink-soft:#6d665b;
+  --ink-faint:#9c9384;
+  --rule:#c9d6e2;
+  --margin-line:#e3a8a2;
+  --cover:#2f4f4a;
+  --cover-2:#223836;
+  --accent:#2f6f6b;
+  --accent-soft:#e3efec;
+  --vermilion:#b5532f;
+  --vermilion-soft:#f8e6dc;
+  --highlight:#ffe98a;
+  --highlight-2:#d9ecb4;
+  --border:#ded5c2;
+  --shadow:0 1px 2px rgba(70,60,40,.08),0 6px 16px -8px rgba(70,60,40,.28);
+  --shadow-lift:0 2px 4px rgba(70,60,40,.10),0 14px 30px -12px rgba(70,60,40,.34);
+  --c-strategy:#7b5ea7;
+  --c-strategy-bg:#ece6f6;
+  --c-management:#2f7f8f;
+  --c-management-bg:#e0f0f2;
+  --c-technology:#a9682b;
+  --c-technology-bg:#f7e9d8;
+  --radius:14px;
+  --sans:"Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic","YuGothic","Noto Sans JP","Meiryo",system-ui,-apple-system,sans-serif;
+  --serif:"Hiragino Mincho ProN","Yu Mincho","YuMincho","Noto Serif JP","Times New Roman",serif;
+  --mono:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  font-family:var(--sans);
+  color:var(--ink);
+  background-color:var(--paper);
+  background-image:radial-gradient(rgba(44,42,38,.055) 1px,transparent 1px);
+  background-size:22px 22px;
+  line-height:1.75;
+  font-size:15px;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+h1,h2,h3,h4{font-family:var(--serif);font-weight:700;line-height:1.4;margin:0;letter-spacing:.02em}
+p{margin:0 0 .75em}
+a{color:var(--accent)}
+button{font-family:inherit;font-size:inherit;color:inherit;cursor:pointer;border:none;background:none}
+input,select,textarea{font-family:inherit;font-size:inherit;color:inherit}
+::selection{background:var(--highlight)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+
+/* ---------- レイアウト ---------- */
+.app-shell{display:flex;min-height:100vh;min-height:100dvh;align-items:stretch}
+.spine{
+  width:236px;flex:0 0 236px;position:sticky;top:0;height:100vh;height:100dvh;
+  background:linear-gradient(168deg,var(--cover) 0%,var(--cover-2) 100%);
+  color:#efe9db;display:flex;flex-direction:column;
+  padding:26px 18px 18px 30px;overflow-y:auto;z-index:40;
+  box-shadow:inset -12px 0 22px -14px rgba(0,0,0,.6),4px 0 18px -12px rgba(0,0,0,.5);
+}
+.spine::before{
+  content:"";position:absolute;left:8px;top:0;bottom:0;width:16px;
+  background-image:radial-gradient(circle at 50% 50%,rgba(0,0,0,.55) 4.5px,transparent 5px),
+                   linear-gradient(90deg,rgba(255,255,255,.16),rgba(255,255,255,0) 65%);
+  background-size:16px 30px,100% 100%;
+  background-repeat:repeat-y,no-repeat;
+  opacity:.55;pointer-events:none;
+}
+.brand{display:block;color:#fff;text-decoration:none;margin:2px 0 22px}
+.brand .b-main{font-family:var(--serif);font-size:20px;letter-spacing:.06em;display:block}
+.brand .b-sub{display:block;font-size:10.5px;letter-spacing:.28em;text-transform:uppercase;color:#b8cfc8;margin-top:4px}
+.brand .b-rule{display:block;height:1px;background:linear-gradient(90deg,#8fae a6,rgba(255,255,255,.06));margin-top:10px;background-color:rgba(255,255,255,.25)}
+.nav-group-label{font-size:10px;letter-spacing:.2em;color:#8fb0a9;margin:16px 0 6px 10px;text-transform:uppercase}
+.nav-item{
+  display:flex;align-items:center;gap:10px;width:100%;text-align:left;
+  padding:9px 12px;border-radius:9px;color:#dfe9e4;text-decoration:none;font-size:13.5px;
+  transition:background .16s,color .16s,transform .16s;border-left:3px solid transparent;
+}
+.nav-item:hover{background:rgba(255,255,255,.09);color:#fff}
+.nav-item.active{background:rgba(255,255,255,.14);color:#fff;border-left-color:var(--highlight);font-weight:700}
+.nav-item svg{width:17px;height:17px;flex:0 0 17px;opacity:.9}
+.nav-item.active svg{opacity:1}
+.nav-badge{margin-left:auto;background:var(--highlight);color:#3a3116;font-size:10.5px;font-weight:700;border-radius:20px;padding:0 7px;line-height:17px;min-width:18px;text-align:center}
+.spine-foot{margin-top:auto;padding-top:18px;font-size:11px;color:#93b1aa;line-height:1.6}
+.spine-foot .count-num{font-family:var(--serif);font-size:26px;color:#fff;line-height:1.1;display:block}
+.spine-foot .count-label{font-size:10.5px;letter-spacing:.12em}
+
+.main-wrap{flex:1;min-width:0;display:flex;flex-direction:column}
+.topbar{
+  display:none;position:sticky;top:0;z-index:30;
+  background:rgba(246,242,231,.94);backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--border);padding:10px 14px;
+  align-items:center;gap:10px;
+}
+.topbar .tb-title{font-family:var(--serif);font-size:16px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.topbar .tb-days{font-size:11px;color:var(--ink-soft);background:var(--paper-3);border:1px solid var(--border);border-radius:20px;padding:2px 9px;white-space:nowrap}
+main#view{padding:30px 34px 80px;max-width:1080px;width:100%;margin:0 auto}
+.tabbar{display:none}
+
+@media (max-width:900px){
+  .spine{
+    position:fixed;left:0;top:0;bottom:0;height:100dvh;width:262px;flex-basis:262px;
+    transform:translateX(-104%);transition:transform .28s cubic-bezier(.3,.7,.3,1);
+    box-shadow:8px 0 40px rgba(0,0,0,.4);
+  }
+  .spine.open{transform:translateX(0)}
+  .topbar{display:flex}
+  main#view{padding:16px 14px 96px}
+  .tabbar{
+    display:flex;position:fixed;left:0;right:0;bottom:0;z-index:35;
+    background:rgba(255,253,247,.97);backdrop-filter:blur(10px);
+    border-top:1px solid var(--border);padding:5px 4px calc(5px + env(safe-area-inset-bottom));
+  }
+  .tabbar button{
+    flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;
+    font-size:10px;color:var(--ink-faint);padding:4px 0;border-radius:8px;
+  }
+  .tabbar button.active{color:var(--accent);font-weight:700}
+  .tabbar svg{width:20px;height:20px}
+  .scrim{position:fixed;inset:0;background:rgba(20,26,24,.42);z-index:39;opacity:0;pointer-events:none;transition:opacity .25s}
+  .scrim.show{opacity:1;pointer-events:auto}
+}
+@media (min-width:901px){ .scrim{display:none} .menu-btn{display:none!important} }
+
+/* ---------- 見出し・紙片 ---------- */
+.page-head{display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap;margin-bottom:22px}
+.page-head h1{font-size:26px;display:flex;align-items:center;gap:10px}
+.page-head .sub{color:var(--ink-soft);font-size:12.5px;letter-spacing:.02em;padding-bottom:5px}
+.page-head .spacer{flex:1}
+.eyebrow{font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:2px}
+.hl{background:linear-gradient(transparent 58%,var(--highlight) 58%,var(--highlight) 92%,transparent 92%);padding:0 2px}
+.card{
+  position:relative;background:var(--paper-2);border:1px solid var(--border);
+  border-radius:var(--radius);padding:20px 22px;box-shadow:var(--shadow);
+}
+.card.tight{padding:14px 16px}
+.card + .card{margin-top:16px}
+.card-title{font-family:var(--serif);font-size:16.5px;display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.card-title .ct-sub{font-family:var(--sans);font-size:11.5px;color:var(--ink-faint);font-weight:400}
+.tape{
+  position:absolute;width:76px;height:22px;background:rgba(214,198,150,.42);
+  border-left:1px dashed rgba(255,255,255,.5);border-right:1px dashed rgba(255,255,255,.5);
+  top:-10px;left:26px;transform:rotate(-2.4deg);pointer-events:none;
+  box-shadow:0 1px 3px rgba(90,80,50,.12);
+}
+.tape.right{left:auto;right:26px;transform:rotate(2deg);background:rgba(180,200,190,.45)}
+.card-lined{
+  background-image:linear-gradient(transparent calc(1.75em - 1px),rgba(201,214,226,.55) 1px);
+  background-size:100% 1.75em;background-position:0 .55em;
+}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.grid-auto{display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:14px}
+@media (max-width:760px){ .grid-2,.grid-3{grid-template-columns:1fr} }
+
+/* ---------- ボタン ---------- */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:10px 18px;border-radius:10px;font-size:13.5px;font-weight:700;
+  background:var(--paper-3);border:1px solid var(--border);color:var(--ink);
+  transition:transform .12s,box-shadow .16s,background .16s;text-decoration:none;
+  white-space:nowrap;
+}
+.btn:hover{transform:translateY(-1px);box-shadow:var(--shadow)}
+.btn:active{transform:translateY(0)}
+.btn svg{width:16px;height:16px}
+.btn-primary{background:var(--accent);border-color:#285f5b;color:#fff;box-shadow:0 2px 0 #244e4a}
+.btn-primary:hover{background:#356f6b}
+.btn-vermilion{background:var(--vermilion);border-color:#95411f;color:#fff;box-shadow:0 2px 0 #7d3a1c}
+.btn-ghost{background:transparent}
+.btn-sm{padding:6px 12px;font-size:12px;border-radius:8px}
+.btn-lg{padding:14px 26px;font-size:15.5px;border-radius:12px}
+.btn-block{width:100%}
+.btn[disabled]{opacity:.45;cursor:not-allowed;transform:none!important;box-shadow:none}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap}
+.btn-row.end{justify-content:flex-end}
+
+/* ---------- タグ・ピル ---------- */
+.pill{
+  display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;
+  padding:2px 9px;border-radius:20px;background:var(--paper-3);color:var(--ink-soft);
+  border:1px solid var(--border);white-space:nowrap;line-height:1.7;
+}
+.pill.strategy{background:var(--c-strategy-bg);color:#5b4382;border-color:#d9cdec}
+.pill.management{background:var(--c-management-bg);color:#1f5c68;border-color:#c3dfe3}
+.pill.technology{background:var(--c-technology-bg);color:#8a521f;border-color:#ebd5ba}
+.pill.past{background:#fdf0d0;color:#8a6a12;border-color:#edddaa}
+.pill.ok{background:#e4f2e4;color:#2f6b3a;border-color:#c6e2c6}
+.pill.ng{background:var(--vermilion-soft);color:#9c4526;border-color:#f0cdbb}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block;flex:0 0 8px}
+.dot.strategy{background:var(--c-strategy)}
+.dot.management{background:var(--c-management)}
+.dot.technology{background:var(--c-technology)}
+/* ---------- KPI / スタット ---------- */
+.stat{
+  background:var(--paper-2);border:1px solid var(--border);border-radius:var(--radius);
+  padding:14px 16px;box-shadow:var(--shadow);position:relative;overflow:hidden;
+}
+.stat::after{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent);opacity:.55}
+.stat.s-strategy::after{background:var(--c-strategy)}
+.stat.s-management::after{background:var(--c-management)}
+.stat.s-technology::after{background:var(--c-technology)}
+.stat .lbl{display:block;font-size:11px;color:var(--ink-faint);letter-spacing:.08em;margin-bottom:2px}
+.stat .val{display:block;font-family:var(--serif);font-size:30px;line-height:1.2;letter-spacing:.01em}
+.stat .val small{font-size:13px;font-family:var(--sans);color:var(--ink-soft);margin-left:2px}
+.stat .note{display:block;font-size:11px;color:var(--ink-soft);line-height:1.55;margin-top:2px}
+
+/* ---------- 学習状況バー ---------- */
+.bar{height:9px;background:var(--paper-3);border-radius:20px;overflow:hidden;border:1px solid rgba(0,0,0,.03)}
+.bar > i{display:block;height:100%;border-radius:20px;background:var(--accent);transition:width .5s cubic-bezier(.3,.8,.3,1)}
+.bar.sm{height:6px}
+.bar.strategy > i{background:var(--c-strategy)}
+.bar.management > i{background:var(--c-management)}
+.bar.technology > i{background:var(--c-technology)}
+
+/* ---------- ホーム ---------- */
+.hero{
+  position:relative;background:var(--paper-2);border:1px solid var(--border);border-radius:16px;
+  padding:24px 26px;box-shadow:var(--shadow);overflow:hidden;
+  background-image:linear-gradient(transparent calc(1.9em - 1px),rgba(201,214,226,.45) 1px);
+  background-size:100% 1.9em;background-position:0 .4em;
+}
+.hero::before{content:"";position:absolute;left:38px;top:0;bottom:0;width:2px;background:var(--margin-line);opacity:.65}
+.hero > *{position:relative}
+.hero h2{font-size:23px;margin-bottom:6px}
+.hero .lead{color:var(--ink-soft);font-size:13px;max-width:58ch}
+.countdown{display:flex;align-items:baseline;gap:6px;margin:14px 0 4px}
+.countdown .num{font-family:var(--serif);font-size:52px;line-height:1;color:var(--vermilion);letter-spacing:-.02em}
+.countdown .unit{font-size:15px;color:var(--ink-soft)}
+.countdown{flex-wrap:wrap}
+.countdown .rest{font-size:12px;color:var(--ink-faint);margin-left:8px}
+@media (max-width:560px){
+  .countdown .num{font-size:44px}
+  .countdown .rest{flex-basis:100%;margin-left:0;margin-top:4px}
+  .hero{padding:18px 16px 20px}
+  .hero::before{left:10px}
+  .hero h2{font-size:20px}
+}
+.quick-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:12px;margin-top:18px}
+@media (max-width:560px){ .quick-grid{grid-template-columns:1fr 1fr;gap:9px} .quick{padding:11px 12px} .quick .q-t{font-size:13px} .quick .q-d{font-size:10.5px} .quick .q-ico{width:26px;height:26px} }
+.quick{
+  display:flex;flex-direction:column;gap:4px;text-align:left;background:var(--paper-2);
+  border:1px solid var(--border);border-radius:12px;padding:14px 15px;box-shadow:var(--shadow);
+  transition:transform .14s,box-shadow .16s,border-color .16s;
+}
+.quick:hover{transform:translateY(-2px);box-shadow:var(--shadow-lift);border-color:#cbbfa5}
+.quick .q-ico{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent);margin-bottom:4px}
+.quick .q-ico svg{width:17px;height:17px}
+.quick .q-t{font-weight:700;font-size:14px}
+.quick .q-d{font-size:11.5px;color:var(--ink-faint);line-height:1.5}
+.quick.tone-v .q-ico{background:var(--vermilion-soft);color:var(--vermilion)}
+.quick.tone-s .q-ico{background:var(--c-strategy-bg);color:var(--c-strategy)}
+.quick.tone-m .q-ico{background:var(--c-management-bg);color:var(--c-management)}
+.quick.tone-t .q-ico{background:var(--c-technology-bg);color:var(--c-technology)}
+
+.today-list{list-style:none;padding:0;margin:0}
+.today-list li{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px dashed var(--border);font-size:13px}
+.today-list li:last-child{border-bottom:none}
+.today-list .ck{
+  width:18px;height:18px;flex:0 0 18px;border:1.5px solid #b9ae96;border-radius:5px;background:#fff;
+  display:grid;place-items:center;margin-top:2px;transition:background .15s,border-color .15s;
+}
+.today-list .ck svg{width:12px;height:12px;color:#fff;opacity:0;transition:opacity .15s}
+.today-list li.done .ck{background:var(--accent);border-color:var(--accent)}
+.today-list li.done .ck svg{opacity:1}
+.today-list li.done .tx{text-decoration:line-through;color:var(--ink-faint)}
+.today-list .tx{flex:1;min-width:0}
+.today-list .meta{font-size:11px;color:var(--ink-faint);display:block}
+
+/* ---------- クイズ ---------- */
+.quiz-top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.progress-track{flex:1;min-width:120px;display:flex;gap:3px}
+.progress-track i{flex:1;height:7px;border-radius:3px;background:var(--paper-3);border:1px solid rgba(0,0,0,.04);transition:background .3s}
+.progress-track i.ok{background:var(--accent)}
+.progress-track i.ng{background:var(--vermilion)}
+.progress-track i.now{background:#c7b78d}
+.quiz-meta{font-size:12px;color:var(--ink-soft);white-space:nowrap;font-variant-numeric:tabular-nums}
+.quiz-meta b{font-family:var(--serif);font-size:16px;color:var(--ink)}
+.timer{font-family:var(--mono);font-size:14px;font-weight:700;background:var(--paper-3);border:1px solid var(--border);padding:3px 10px;border-radius:8px;font-variant-numeric:tabular-nums}
+.timer.warn{background:var(--vermilion-soft);color:#9c4526;border-color:#eec3ae;animation:pulse 1s infinite}
+@keyframes pulse{50%{opacity:.62}}
+
+.q-card{position:relative;background:var(--paper-2);border:1px solid var(--border);border-radius:16px;padding:22px 24px 24px;box-shadow:var(--shadow)}
+.q-card::before{content:"";position:absolute;left:44px;top:0;bottom:0;width:2px;background:var(--margin-line);opacity:.5}
+.q-head{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+.q-text{font-family:var(--serif);font-size:17px;line-height:1.9;margin:0 0 18px;white-space:pre-wrap}
+@media (max-width:600px){ .q-text{font-size:15.5px;line-height:1.85} .q-card{padding:16px 16px 18px} .q-card::before{left:8px;opacity:.35} }
+.choices{display:flex;flex-direction:column;gap:9px;margin:0;padding:0;list-style:none}
+.choice{
+  display:flex;gap:11px;align-items:flex-start;width:100%;text-align:left;
+  background:#fff;border:1.5px solid var(--border);border-radius:11px;padding:12px 14px;
+  font-size:14px;line-height:1.7;transition:border-color .15s,background .15s,transform .1s;
+}
+.choice:hover{border-color:#b9a887;background:#fffef9}
+.choice .k{
+  width:23px;height:23px;flex:0 0 23px;border-radius:50%;border:1.5px solid #b9ae96;
+  display:grid;place-items:center;font-family:var(--serif);font-size:12.5px;font-weight:700;
+  color:var(--ink-soft);background:var(--paper-2);margin-top:1px;
+}
+.choice.sel{border-color:var(--accent);background:var(--accent-soft)}
+.choice.sel .k{background:var(--accent);border-color:var(--accent);color:#fff}
+.choice.correct{border-color:#4c8f5a;background:#eaf5ea}
+.choice.correct .k{background:#4c8f5a;border-color:#4c8f5a;color:#fff}
+.choice.wrong{border-color:var(--vermilion);background:var(--vermilion-soft)}
+.choice.wrong .k{background:var(--vermilion);border-color:var(--vermilion);color:#fff}
+.choice[disabled]{cursor:default;transform:none!important}
+.choice .mk{margin-left:auto;font-size:11px;font-weight:700;white-space:nowrap;padding-top:3px}
+.choice.correct .mk{color:#2f6b3a}
+.choice.wrong .mk{color:#9c4526}
+
+.explain{margin-top:16px;border-top:1px dashed var(--border);padding-top:14px;animation:fadeUp .28s ease}
+.explain .ex-head{display:flex;align-items:center;gap:8px;font-weight:700;font-size:13px;margin-bottom:6px}
+.explain .ex-head .res{font-family:var(--serif);font-size:15px}
+.explain p{font-size:13px;line-height:1.85;color:var(--ink-soft);margin:0 0 .6em}
+.explain .point{background:#fffbe6;border-left:3px solid #e0c04a;padding:8px 12px;border-radius:0 8px 8px 0;font-size:12.5px;color:#6b5a1c}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+.quiz-foot{display:flex;align-items:center;gap:10px;margin-top:16px;flex-wrap:wrap}
+.quiz-foot .spacer{flex:1}
+.kbd-hint{font-size:11px;color:var(--ink-faint)}
+@media (max-width:700px){ .kbd-hint{display:none} }
+
+/* ---------- 結果 ---------- */
+.score-panel{display:flex;gap:24px;align-items:center;flex-wrap:wrap}
+.ring{position:relative;width:132px;height:132px;flex:0 0 132px}
+.ring svg{transform:rotate(-90deg);width:132px;height:132px}
+.ring .ring-val{position:absolute;inset:0;display:grid;place-content:center;text-align:center}
+.ring .ring-val b{font-family:var(--serif);font-size:33px;line-height:1.1;display:block}
+.ring .ring-val span{font-size:10.5px;color:var(--ink-faint);letter-spacing:.1em}
+.result-verdict{font-family:var(--serif);font-size:19px;margin-bottom:4px}
+.result-verdict.pass{color:#2f6b3a}
+.result-verdict.near{color:#a9682b}
+.result-verdict.fail{color:var(--vermilion)}
+
+.field-rows{display:flex;flex-direction:column;gap:12px}
+.field-row{display:grid;grid-template-columns:96px 1fr 78px;gap:10px;align-items:center;font-size:12.5px}
+.field-row .fname{display:flex;align-items:center;gap:6px;white-space:nowrap}
+.field-row .fval{text-align:right;font-variant-numeric:tabular-nums;color:var(--ink-soft)}
+.field-row .fval b{font-family:var(--serif);font-size:15px;color:var(--ink)}
+@media (max-width:600px){ .field-row{grid-template-columns:82px 1fr 66px;gap:7px;font-size:12px} }
+
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media (max-width:640px){ .stat-row{grid-template-columns:1fr 1fr} .stat-row .stat:last-child{grid-column:1/-1} }
+
+.subcat-list{display:flex;flex-direction:column;gap:9px}
+.subcat{display:grid;grid-template-columns:1fr auto;gap:2px 10px;align-items:center}
+.subcat .sc-name{font-size:12.5px;display:flex;align-items:center;gap:6px;min-width:0}
+.subcat .sc-name span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.subcat .sc-num{font-size:11px;color:var(--ink-faint);font-variant-numeric:tabular-nums}
+.subcat .bar{grid-column:1/-1}
+
+/* ---------- チャート ---------- */
+.chart-box{position:relative;width:100%}
+.chart-box canvas{display:block;width:100%;height:auto}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:11.5px;color:var(--ink-soft);margin-top:8px}
+.legend i{width:9px;height:9px;border-radius:2px;display:inline-block;margin-right:5px}
+.empty{
+  text-align:center;padding:34px 16px;color:var(--ink-faint);font-size:13px;
+  border:1.5px dashed var(--border);border-radius:12px;background:rgba(255,255,255,.4);
+}
+.empty .em-ico{font-size:26px;display:block;margin-bottom:6px;opacity:.6}
+
+/* ---------- 履歴テーブル ---------- */
+.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table.tbl{width:100%;border-collapse:collapse;font-size:12.5px;min-width:560px}
+table.tbl th{
+  text-align:left;font-size:10.5px;letter-spacing:.1em;color:var(--ink-faint);font-weight:700;
+  padding:8px 10px;border-bottom:1.5px solid var(--border);white-space:nowrap;text-transform:uppercase;
+}
+table.tbl td{padding:10px;border-bottom:1px dashed var(--border);vertical-align:middle}
+table.tbl tr:hover td{background:rgba(255,251,235,.7)}
+table.tbl .num{font-variant-numeric:tabular-nums;white-space:nowrap}
+.mini-bar{width:64px;height:6px;background:var(--paper-3);border-radius:4px;overflow:hidden;display:inline-block;vertical-align:middle}
+.mini-bar i{display:block;height:100%;background:var(--accent);border-radius:4px}
+
+/* ---------- ロードマップ ---------- */
+.rm-week{margin-bottom:18px}
+.rm-week-head{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.rm-week-head h4{font-size:14px;display:flex;align-items:center;gap:8px}
+.rm-week-head .wk-tag{font-size:10.5px;letter-spacing:.14em;background:var(--cover);color:#f2ece0;border-radius:20px;padding:2px 10px}
+.rm-week-head .wk-line{flex:1;height:1px;background:var(--border)}
+.rm-days{display:flex;flex-direction:column;gap:8px}
+.rm-day{
+  display:grid;grid-template-columns:62px 1fr auto;gap:12px;align-items:center;
+  background:var(--paper-2);border:1px solid var(--border);border-radius:11px;padding:11px 14px;
+  box-shadow:0 1px 2px rgba(70,60,40,.05);
+}
+.rm-day.is-today{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft),var(--shadow)}
+.rm-day.is-rest{background:transparent;border-style:dashed;box-shadow:none;opacity:.85}
+.rm-day.past-miss{border-color:#e3b9a5;background:#fdf6f1}
+.rm-date{font-family:var(--serif);text-align:center;line-height:1.2;border-right:1px solid var(--border);padding-right:10px}
+.rm-date .d{font-size:19px}
+.rm-date .m{font-size:10.5px;color:var(--ink-faint)}
+.rm-date .w{font-size:10px;color:var(--ink-soft);display:block}
+.rm-body{min-width:0}
+.rm-body .t{font-size:13px;font-weight:700;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.rm-body .d2{font-size:11.5px;color:var(--ink-faint);line-height:1.5;margin-top:2px}
+.rm-chk{width:30px;height:30px;border-radius:8px;border:1.5px solid #c3b79c;background:#fff;display:grid;place-items:center;transition:.15s}
+.rm-chk svg{width:16px;height:16px;color:#fff;opacity:0}
+.rm-chk.on{background:var(--accent);border-color:var(--accent)}
+.rm-chk.on svg{opacity:1}
+@media (max-width:620px){
+  .rm-day{
+    grid-template-columns:46px 1fr;grid-template-areas:"date body" "date actions";
+    gap:4px 10px;padding:10px 12px;align-items:start;
+  }
+  .rm-date{grid-area:date;border-right:1px solid var(--border);padding-right:8px;align-self:stretch;padding-top:2px}
+  .rm-body{grid-area:body}
+  .rm-day > .flex:last-child{grid-area:actions;justify-content:flex-end;margin-top:6px}
+  .rm-date .d{font-size:17px}
+  .rm-date .m,.rm-date .w{font-size:9.5px}
+  .rm-body .t{font-size:12.5px;gap:5px}
+  .rm-body .d2{font-size:11px}
+}
+
+/* ---------- フラッシュカード ---------- */
+.fc-stage{perspective:1400px;max-width:520px;margin:0 auto}
+.fc{
+  position:relative;width:100%;min-height:260px;cursor:pointer;
+  transform-style:preserve-3d;transition:transform .5s cubic-bezier(.3,.8,.3,1);
+}
+.fc.flip{transform:rotateY(180deg)}
+.fc-face{
+  position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  background:var(--paper-2);border:1px solid var(--border);border-radius:16px;
+  box-shadow:var(--shadow-lift);padding:24px;display:flex;flex-direction:column;
+  justify-content:center;overflow:auto;
+}
+.fc-face.back{transform:rotateY(180deg);background:linear-gradient(#fffdf7,#fbf7ea)}
+.fc-face .fc-tag{position:absolute;top:14px;left:18px;font-size:10.5px;letter-spacing:.14em;color:var(--ink-faint)}
+.fc-face .fc-term{font-family:var(--serif);font-size:26px;text-align:center;line-height:1.5;padding:0 10px}
+.fc-face .fc-hint{position:absolute;bottom:12px;left:0;right:0;text-align:center;font-size:10.5px;color:var(--ink-faint)}
+.fc-face .fc-def{font-size:14px;line-height:1.95}
+.fc-face .fc-def b{background:linear-gradient(transparent 60%,var(--highlight) 60%)}
+.fc-face .fc-key{margin-top:10px;font-size:11.5px;color:var(--vermilion);border-top:1px dashed var(--border);padding-top:8px}
+.fc-nav{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:16px}
+.fc-count{font-variant-numeric:tabular-nums;font-size:12px;color:var(--ink-soft);min-width:74px;text-align:center}
+.fc-actions{display:flex;gap:8px;justify-content:center;margin-top:10px;flex-wrap:wrap}
+
+/* ---------- フォーム ---------- */
+.field{margin-bottom:14px}
+.field label{display:block;font-size:11.5px;font-weight:700;color:var(--ink-soft);margin-bottom:4px;letter-spacing:.04em}
+.inp,select.inp,textarea.inp{
+  width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:9px;
+  background:#fff;font-size:14px;transition:border-color .15s,box-shadow .15s;
+}
+.inp:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+textarea.inp{resize:vertical;min-height:70px;line-height:1.7}
+select.inp{appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--ink-soft) 50%),linear-gradient(135deg,var(--ink-soft) 50%,transparent 50%);background-position:calc(100% - 16px) 52%,calc(100% - 11px) 52%;background-size:5px 5px,5px 5px;background-repeat:no-repeat;padding-right:34px}
+.inline-fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.seg{display:inline-flex;background:var(--paper-3);border:1px solid var(--border);border-radius:10px;padding:3px;gap:2px;flex-wrap:wrap}
+.seg button{padding:6px 13px;border-radius:7px;font-size:12.5px;color:var(--ink-soft);font-weight:700;transition:.15s}
+.seg button.on{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.seg.wide{display:flex;width:100%}
+.seg.wide button{flex:1}
+.chip-row{display:flex;gap:8px;flex-wrap:wrap}
+.chip{
+  padding:7px 14px;border:1.5px solid var(--border);border-radius:20px;background:#fff;
+  font-size:12.5px;transition:.15s;
+}
+.chip.on{border-color:var(--accent);background:var(--accent-soft);font-weight:700;color:var(--accent)}
+.chip.s-on{border-color:var(--c-strategy);background:var(--c-strategy-bg);color:#5b4382;font-weight:700}
+.chip.m-on{border-color:var(--c-management);background:var(--c-management-bg);color:#1f5c68;font-weight:700}
+.chip.t-on{border-color:var(--c-technology);background:var(--c-technology-bg);color:#8a521f;font-weight:700}
+.chk-line{display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer}
+.chk-line input{width:17px;height:17px;accent-color:var(--accent)}
+
+/* ---------- モーダル / トースト ---------- */
+.modal-back{
+  position:fixed;inset:0;background:rgba(30,36,32,.45);z-index:60;
+  display:flex;align-items:center;justify-content:center;padding:18px;
+  opacity:0;pointer-events:none;transition:opacity .2s;backdrop-filter:blur(2px);
+}
+.modal-back.show{opacity:1;pointer-events:auto}
+.modal{
+  background:var(--paper-2);border:1px solid var(--border);border-radius:16px;
+  width:100%;max-width:560px;max-height:88vh;overflow:auto;box-shadow:0 24px 60px -20px rgba(0,0,0,.5);
+  transform:translateY(8px) scale(.985);transition:transform .22s;padding:22px 24px;
+}
+.modal-back.show .modal{transform:none}
+.modal h3{font-size:18px;margin-bottom:4px}
+.modal .m-sub{font-size:12px;color:var(--ink-faint);margin-bottom:16px}
+.modal-foot{display:flex;gap:10px;justify-content:flex-end;margin-top:18px;flex-wrap:wrap}
+
+#toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);z-index:80;opacity:0;pointer-events:none;transition:.25s}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+#toast .t-in{
+  background:var(--cover);color:#f5f0e4;padding:9px 18px;border-radius:24px;font-size:12.5px;
+  box-shadow:0 8px 24px -8px rgba(0,0,0,.5);display:flex;align-items:center;gap:8px;
+}
+@media (max-width:900px){ #toast{bottom:78px} }
+
+/* ---------- その他 ---------- */
+.note-box{background:#fffbe6;border:1px solid #eadfae;border-radius:10px;padding:12px 14px;font-size:12.5px;color:#6b5a1c;line-height:1.8}
+.note-box b{color:#514400}
+.muted{color:var(--ink-faint)}
+.small{font-size:11.5px}
+.mt0{margin-top:0}.mt8{margin-top:8px}.mt16{margin-top:16px}.mt24{margin-top:24px}
+.mb0{margin-bottom:0}.mb8{margin-bottom:8px}.mb16{margin-bottom:16px}
+.flex{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.between{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.right{text-align:right}
+.center{text-align:center}
+.hr-dash{height:1px;border:none;border-top:1px dashed var(--border);margin:16px 0}
+.nowrap{white-space:nowrap}
+.hidden{display:none!important}
+.scroll-x{overflow-x:auto}
+.tabs{display:flex;gap:4px;border-bottom:1.5px solid var(--border);margin-bottom:16px;overflow-x:auto}
+.tabs button{padding:8px 14px;font-size:13px;color:var(--ink-soft);border-bottom:2.5px solid transparent;margin-bottom:-1.5px;white-space:nowrap;font-weight:700}
+.tabs button.on{color:var(--ink);border-bottom-color:var(--accent)}
+.qbank-item{border:1px solid var(--border);border-radius:10px;padding:10px 13px;background:#fff;margin-bottom:8px}
+.qbank-item .qb-q{font-size:13px;line-height:1.7;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.qbank-item .qb-meta{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:6px}
+.print-only{display:none}
+@media print{
+  .spine,.topbar,.tabbar,.no-print{display:none!important}
+  main#view{padding:0}
+  body{background:#fff}
+  .card{box-shadow:none;break-inside:avoid}
+}
+</style>
+</head>
+<body>
+<div class="app-shell">
+  <aside class="spine" id="spine" aria-label="サイドバー">
+    <a class="brand" href="#/home" data-nav="home">
+      <span class="b-main">ITパスポート</span>
+      <span class="b-sub">Study Notebook</span>
+      <span class="b-rule"></span>
+    </a>
+    <nav id="sidebar-nav" aria-label="メインナビゲーション"></nav>
+    <div class="spine-foot">
+      <span class="count-num" id="spine-qcount">0</span>
+      <span class="count-label">収録問題数</span>
+      <div style="margin-top:8px" id="spine-streak"></div>
+    </div>
+  </aside>
+  <div class="scrim" id="scrim"></div>
+
+  <div class="main-wrap">
+    <header class="topbar">
+      <button class="btn btn-sm btn-ghost" id="menu-btn" aria-label="メニューを開く" style="padding:6px 8px">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+      <span class="tb-title" id="tb-title">ホーム</span>
+      <span class="tb-days" id="tb-days"></span>
+    </header>
+    <main id="view" tabindex="-1"></main>
+  </div>
+</div>
+
+<nav class="tabbar" id="tabbar" aria-label="タブバー"></nav>
+
+<div class="modal-back" id="modal-back">
+  <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title"></div>
+</div>
+
+<div id="toast" role="status" aria-live="polite"><div class="t-in" id="toast-in"></div></div>
+<script>
+/* =========================================================================
+   問題データ — ストラテジ系
+   field: strategy / management / technology
+   mid: 中分類, sub: 小分類（分析の最小単位）
+   p: 1 のものは過去問をベースに再構成したもの, y: 出題年度
+   a: 正解の添字(0-3), e: 解説, pt: 暗記ポイント
+   ========================================================================= */
+window.Q_STRATEGY = [
+{id:"S01",field:"strategy",mid:"企業活動",sub:"経営組織",a:1,p:1,y:2024,
+ q:"事業部制組織の説明として、最も適切なものはどれか。",
+ c:["営業、製造、経理などの職能ごとに部門を分け、各部門の専門性を高める組織",
+    "製品や市場、地域などの単位で部門を分け、各部門に意思決定権限を委譲する組織",
+    "特定の課題を解決するために臨時に編成され、課題の完了とともに解散する組織",
+    "経営者を補佐し、専門的な立場から助言や調査を行う組織"],
+ e:"事業部制組織は、製品別・市場別・地域別などの単位で事業部を設け、各事業部に利益責任と広い権限を委譲する組織形態です。事業部ごとに完結した経営を行うため意思決定が速く、責任の所在も明確になります。1は職能別組織、3はプロジェクト組織、4はスタッフ部門の説明です。",
+ pt:"事業部制＝製品・市場単位＋権限委譲＋利益責任"},
+
+{id:"S02",field:"strategy",mid:"企業活動",sub:"経営組織",a:2,
+ q:"マトリックス組織の特徴として、最も適切なものはどれか。",
+ c:["一人の上司だけに報告する単純な命令系統をもつ",
+    "組織の階層を極力なくし、全員が対等に意見を出し合う",
+    "職能別の縦の命令系統と、製品・プロジェクト別の横の命令系統を組み合わせる",
+    "本社の管理部門を廃止し、現場にすべての権限を移譲する"],
+ e:"マトリックス組織は、職能別部門（縦）と製品・プロジェクト別部門（横）を掛け合わせた組織形態で、社員は二つの上司から指示を受けます。専門性の活用と目的達成の両立が図れる一方、命令系統の重複による意思決定の遅れやコンフリクトが課題になります。",
+ pt:"マトリックス＝縦（職能）×横（製品・PJ）の二重命令系統"},
+
+{id:"S03",field:"strategy",mid:"企業活動",sub:"経営組織",a:0,
+ q:"カンパニー制の説明として、最も適切なものはどれか。",
+ c:["社内を複数の独立した事業単位に分け、それぞれに高い自律性と資本効率などの責任をもたせる",
+    "全社の業務を一つの部門に集約し、規模の経済を追求する",
+    "期間を定めずに全社横断の委員会を設置し、合意形成を図る",
+    "海外拠点を統括するための持株会社を設立する"],
+ e:"カンパニー制は、社内を製品・地域などの単位で「社内カンパニー」に分け、それぞれをあたかも独立企業のように運営させる制度です。カンパニー社長に大幅な権限を委譲し、損益だけでなく投下資本利益率（ROI）などの資本効率まで責任を負わせる点が事業部制との違いです。",
+ pt:"カンパニー制＝疑似独立企業＋資本効率（ROI）責任"},
+
+{id:"S04",field:"strategy",mid:"企業活動",sub:"業務分析・データ利活用",a:3,p:1,y:2022,
+ q:"ブレーンストーミングの4原則に含まれないものはどれか。",
+ c:["他人のアイデアを批判しない","自由奔放なアイデアを歓迎する","アイデアの質より量を重視する","アイデアは必ず実現可能なものに限定する"],
+ e:"ブレーンストーミングの4原則は「批判厳禁」「自由奔放」「量産歓迎」「結合改善」です。実現可能性で絞り込むのは発想段階ではなく、後の評価段階で行います。",
+ pt:"4原則＝批判厳禁・自由奔放・量産歓迎・結合改善"},
+
+{id:"S05",field:"strategy",mid:"企業活動",sub:"業務分析・データ利活用",a:1,
+ q:"ある品質問題について、結果とその原因の関係を魚の骨のような図で整理する手法はどれか。",
+ c:["パレート図","特性要因図","散布図","管理図"],
+ e:"特性要因図（フィッシュボーン図）は、特性（結果）に対して考えられる要因を、人・機械・材料・方法などの切り口で枝分かれさせて整理する図です。パレート図は項目を件数順に並べて累積比率を見る図、散布図は2つの量の相関を見る図、管理図は工程の安定性を監視する図です。",
+ pt:"特性要因図＝結果と原因の因果関係を魚の骨で整理"},
+
+{id:"S06",field:"strategy",mid:"企業活動",sub:"業務分析・データ利活用",a:2,p:1,y:2023,
+ q:"POSデータなどの購買履歴から、「ある商品と一緒に買われることの多い商品」の組合せを見つける分析手法はどれか。",
+ c:["回帰分析","クラスタ分析","アソシエーション分析","主成分分析"],
+ e:"アソシエーション分析（バスケット分析）は、「商品Aを買った人は商品Bも買う傾向がある」といった項目間の同時生起の関係をルールとして抽出します。支持度・信頼度・リフトといった指標でルールの強さを評価します。",
+ pt:"アソシエーション分析＝「同時に買われる」組合せの発見"},
+
+{id:"S07",field:"strategy",mid:"企業活動",sub:"会計・財務",a:1,p:1,y:2022,
+ q:"販売単価が1万円、変動費率が60%、固定費が1,200万円のとき、損益分岐点売上高は何万円か。",
+ c:["1,920万円","3,000万円","7,200万円","12,000万円"],
+ e:"損益分岐点売上高＝固定費÷(1−変動費率)＝1,200÷(1−0.6)＝1,200÷0.4＝3,000万円です。限界利益率（1−変動費率）が40%なので、売上の40%が固定費の回収に充てられる計算になります。",
+ pt:"損益分岐点売上高＝固定費÷(1−変動費率)"},
+
+{id:"S08",field:"strategy",mid:"企業活動",sub:"会計・財務",a:0,
+ q:"取得価額1,200万円、耐用年数5年、残存価額0円の資産を定額法で減価償却するとき、1年あたりの減価償却費は何万円か。",
+ c:["240万円","300万円","600万円","1,200万円"],
+ e:"定額法では、取得価額から残存価額を引いた金額を耐用年数で均等に割ります。(1,200−0)÷5＝240万円です。定率法の場合は未償却残高に償却率を掛けるため、初年度が最も大きくなります。",
+ pt:"定額法＝(取得価額−残存価額)÷耐用年数"},
+
+{id:"S09",field:"strategy",mid:"企業活動",sub:"会計・財務",a:2,
+ q:"貸借対照表（B/S）が表すものとして、最も適切なものはどれか。",
+ c:["一定期間の収益と費用から経営成績を表す","一定期間の現金の増減を表す","ある時点の資産・負債・純資産の状態を表す","製品1個あたりの原価の内訳を表す"],
+ e:"貸借対照表は「ある時点」の財政状態（資産＝負債＋純資産）を示します。「一定期間」の経営成績を示すのは損益計算書（P/L）、現金の増減を示すのはキャッシュフロー計算書（C/S）です。",
+ pt:"B/S＝ある時点の財政状態、P/L＝一定期間の経営成績"},
+
+{id:"S10",field:"strategy",mid:"企業活動",sub:"会計・財務",a:3,
+ q:"ROE（自己資本利益率）を求める式として、正しいものはどれか。",
+ c:["当期純利益÷売上高","売上高÷総資産","当期純利益÷総資産","当期純利益÷自己資本"],
+ e:"ROEは自己資本（株主資本）に対してどれだけ利益を生み出したかを示し、当期純利益÷自己資本で求めます。当期純利益÷売上高は売上高利益率、当期純利益÷総資産はROA（総資産利益率）です。",
+ pt:"ROE＝純利益÷自己資本、ROA＝純利益÷総資産"},
+
+{id:"S11",field:"strategy",mid:"企業活動",sub:"法務",a:1,p:1,y:2023,
+ q:"他人のIDとパスワードを不正に入手し、その利用者になりすましてコンピュータにログインする行為を禁止している法律はどれか。",
+ c:["不正競争防止法","不正アクセス行為の禁止等に関する法律","個人情報の保護に関する法律","電子署名及び認証業務に関する法律"],
+ e:"不正アクセス禁止法は、他人の識別符号（ID・パスワード）を無断で入力してアクセスする行為や、そのための識別符号の不正取得・提供を禁止しています。なお、正規のIDで権限を超えて内部資料を持ち出す行為は、この法律ではなく不正競争防止法や会社の就業規則などで扱われます。",
+ pt:"不正アクセス禁止法＝なりすましログイン＋ID不正取得の禁止"},
+
+{id:"S12",field:"strategy",mid:"企業活動",sub:"法務",a:2,
+ q:"個人情報保護法における「要配慮個人情報」に該当するものはどれか。",
+ c:["氏名","勤務先の電話番号","病歴","メールアドレス"],
+ e:"要配慮個人情報とは、人種、信条、社会的身分、病歴、犯罪の経歴、犯罪により害を被った事実など、不当な差別や偏見が生じないように取扱いに配慮を要する個人情報です。取得には原則として本人の同意が必要です。氏名や連絡先は通常の個人情報に該当します。",
+ pt:"要配慮個人情報＝人種・信条・病歴・犯罪歴など（取得に本人同意）"},
+
+{id:"S13",field:"strategy",mid:"企業活動",sub:"法務",a:0,
+ q:"著作権法に関する記述として、最も適切なものはどれか。",
+ c:["プログラムは著作権法で保護される著作物に含まれる","アイデアそのものが著作権法で保護される","著作権の保護期間は著作者の生存中のみである","他人が作成したプログラムは、社内利用であれば自由に複製できる"],
+ e:"プログラムは著作権法上の「著作物」として保護されます。ただし保護されるのは表現であってアイデア自体ではなく、保護期間は著作者の死後70年です。社内利用目的でも、権利者の許諾なく複製することは原則として認められません。",
+ pt:"プログラムも著作物。保護されるのは表現、アイデアは対象外"},
+
+{id:"S14",field:"strategy",mid:"企業活動",sub:"法務",a:1,
+ q:"労働者派遣法に基づく労働者派遣に関する記述として、最も適切なものはどれか。",
+ c:["派遣労働者は派遣元企業の指揮命令を受けて派遣先で業務を行う","派遣先企業は派遣労働者に直接指揮命令を行うことができる","派遣先は派遣労働者を自由に採用してはならない","派遣契約は個人単位で結ぶ必要がある"],
+ e:"労働者派遣では、雇用主は派遣元、指揮命令権者は派遣先という二重の関係になります。したがって派遣先は業務に関する直接の指揮命令ができます（1は請負の説明に近く、誤り）。契約は派遣元と派遣先の間で締結します。",
+ pt:"派遣＝雇用は派遣元、指揮命令は派遣先"},
+
+{id:"S15",field:"strategy",mid:"経営戦略マネジメント",sub:"経営戦略手法",a:2,p:1,y:2024,
+ q:"自社の置かれている状況を「強み・弱み・機会・脅威」の4つの観点で整理し、経営戦略の立案に役立てる手法はどれか。",
+ c:["3C分析","PPM","SWOT分析","バリューチェーン分析"],
+ e:"SWOT分析は、内部環境である強み（Strength）・弱み（Weakness）と、外部環境である機会（Opportunity）・脅威（Threat）を組み合わせて戦略を導く手法です。3Cは顧客・競合・自社、PPMは市場成長率と市場占有率、バリューチェーンは業務活動の連鎖を分析します。",
+ pt:"SWOT＝内部(S,W)×外部(O,T)"},
+
+{id:"S16",field:"strategy",mid:"経営戦略マネジメント",sub:"経営戦略手法",a:0,
+ q:"3C分析の3つの「C」が表す要素の組合せとして、正しいものはどれか。",
+ c:["顧客・競合・自社","環境・企業・社会","製品・価格・流通","コスト・品質・納期"],
+ e:"3C分析はCustomer（顧客・市場）、Competitor（競合）、Company（自社）の3つの視点から、自社が勝てる市場機会を探るフレームワークです。3は4P（マーケティングミックス）の一部です。",
+ pt:"3C＝Customer / Competitor / Company"},
+
+{id:"S17",field:"strategy",mid:"経営戦略マネジメント",sub:"経営戦略手法",a:3,p:1,y:2021,
+ q:"PPM（プロダクトポートフォリオマネジメント）において、市場成長率が高く市場占有率も高い事業を表す名称はどれか。",
+ c:["金のなる木","負け犬","問題児","花形"],
+ e:"PPMは縦軸に市場成長率、横軸に市場占有率をとり、事業を4象限に分類します。高成長・高シェアは「花形」、低成長・高シェアは「金のなる木」、高成長・低シェアは「問題児」、低成長・低シェアは「負け犬」です。",
+ pt:"花形→金のなる木→（投資は問題児へ選別）→負け犬は撤退"},
+
+{id:"S18",field:"strategy",mid:"経営戦略マネジメント",sub:"経営戦略手法",a:1,
+ q:"マイケル・ポーターが提唱したファイブフォース分析で分析する5つの要因に含まれないものはどれか。",
+ c:["新規参入者の脅威","自社の財務状況","代替品の脅威","売り手（供給者）の交渉力"],
+ e:"ファイブフォースは「新規参入の脅威」「代替品の脅威」「売り手の交渉力」「買い手の交渉力」「業者間の競争」の5つで業界の魅力度を分析します。自社の財務状況は内部環境であり、業界構造の分析対象ではありません。",
+ pt:"5フォース＝新規参入・代替品・売り手・買い手・競争"},
+
+{id:"S19",field:"strategy",mid:"経営戦略マネジメント",sub:"経営戦略手法",a:2,
+ q:"バリューチェーン分析の説明として、最も適切なものはどれか。",
+ c:["売上を製品・顧客・地域別に分解して収益性を比較する","従業員の満足度と顧客満足度の相関を分析する","業務を主活動と支援活動に分け、どの活動が付加価値を生んでいるかを分析する","競合他社の製品価格の推移を時系列で比較する"],
+ e:"バリューチェーンは、調達・製造・出荷・販売・サービスといった主活動と、人事・技術開発・購買などの支援活動に業務を分解し、各活動の付加価値と強みを可視化する手法です。",
+ pt:"バリューチェーン＝主活動＋支援活動の付加価値連鎖"},
+
+{id:"S20",field:"strategy",mid:"経営戦略マネジメント",sub:"マーケティング",a:1,p:1,y:2023,
+ q:"マーケティングミックス（4P）の構成要素として、正しいものはどれか。",
+ c:["Product、Price、Place、Promotion","People、Process、Product、Price","Product、Price、Place、Positioning","Plan、Price、Place、Promotion"],
+ e:"4PはProduct（製品）、Price（価格）、Place（流通・チャネル）、Promotion（プロモーション）の4つです。4Pを顧客側の視点に置き換えたものが4C（顧客価値・顧客負担・利便性・コミュニケーション）です。",
+ pt:"4P＝Product / Price / Place / Promotion"},
+
+{id:"S21",field:"strategy",mid:"経営戦略マネジメント",sub:"マーケティング",a:0,
+ q:"顧客を「最終購買日（Recency）」「購買頻度（Frequency）」「購買金額（Monetary）」の3つの指標で分類し、優良顧客の特定などに用いる手法はどれか。",
+ c:["RFM分析","ABC分析","デシル分析","バスケット分析"],
+ e:"RFM分析は3つの指標の組み合わせで顧客をランク付けし、アプローチ方法を変える手法です。ABC分析は売上などの累積構成比で重点管理対象を決める手法、デシル分析は顧客を10等分して上位層を分析する手法です。",
+ pt:"RFM＝Recency（最新購買日）/ Frequency（頻度）/ Monetary（金額）"},
+
+{id:"S22",field:"strategy",mid:"経営戦略マネジメント",sub:"マーケティング",a:2,
+ q:"カスタマージャーニーマップの説明として、最も適切なものはどれか。",
+ c:["商品の企画から廃番までのライフサイクルを表した図","組織内の意思決定の稟議経路を表した図","顧客が認知から購買、購入後に至るまでの体験を時系列で可視化した図","競合他社との価格競争の推移を表した図"],
+ e:"カスタマージャーニーマップは、顧客の認知・比較・購入・利用・推奨といった各段階での行動・感情・接点を時系列で描き、顧客体験の課題を発見するためのフレームワークです。",
+ pt:"カスタマージャーニー＝顧客体験を時系列で可視化"},
+
+{id:"S23",field:"strategy",mid:"経営戦略マネジメント",sub:"マーケティング",a:3,
+ q:"アンゾフの成長マトリクスにおいて、「新市場に既存製品を投入する」戦略はどれか。",
+ c:["市場浸透","製品開発","多角化","市場開拓"],
+ e:"アンゾフのマトリクスは製品（既存・新規）と市場（既存・新規）の2軸で4つの成長戦略に分類します。既存製品×既存市場は市場浸透、新製品×既存市場は製品開発、既存製品×新市場は市場開拓、新製品×新市場は多角化です。",
+ pt:"既存×既存=浸透、新製品=製品開発、新市場=市場開拓、両方新規=多角化"},
+
+{id:"S24",field:"strategy",mid:"経営戦略マネジメント",sub:"ビジネス戦略と目標・評価",a:1,
+ q:"バランススコアカード（BSC）の4つの視点に含まれないものはどれか。",
+ c:["財務の視点","技術の視点","顧客の視点","学習と成長の視点"],
+ e:"BSCの4つの視点は「財務」「顧客」「業務プロセス」「学習と成長」です。財務指標だけでなく、その先行指標となる非財務指標を組み合わせて戦略の進捗を管理します。「技術の視点」は含まれません。",
+ pt:"BSC＝財務・顧客・業務プロセス・学習と成長"},
+
+{id:"S25",field:"strategy",mid:"経営戦略マネジメント",sub:"ビジネス戦略と目標・評価",a:2,
+ q:"KGIとKPIの関係を説明したものとして、最も適切なものはどれか。",
+ c:["KGIは中間目標、KPIは最終目標を表す","KGIとKPIは同一の指標を呼び方を変えたものである","KGIは最終的に達成すべき目標、KPIはその達成度を測る中間指標である","KPIは財務指標に限定され、KGIは非財務指標に限定される"],
+ e:"KGI（重要目標達成指標）は最終ゴール、KPI（重要業績評価指標）はKGI達成に向けた中間の達成度を測る指標です。「KGI：売上100億円」に対して「KPI：月間新規顧客数」のように設定します。",
+ pt:"KGI＝ゴール、KPI＝途中の計器"},
+
+{id:"S26",field:"strategy",mid:"経営戦略マネジメント",sub:"ビジネス戦略と目標・評価",a:0,
+ q:"コアコンピタンスの説明として、最も適切なものはどれか。",
+ c:["他社が容易にまねできない、自社の中核となる能力","自社のすべての業務プロセスを標準化した仕組み","市場占有率が最も高い製品","短期的に最も利益率の高い事業"],
+ e:"コアコンピタンスは、顧客に価値を提供し、競合他社が模倣しにくく、複数の製品・事業に展開できる自社の中核的能力です。事業の選択と集中やアウトソーシングの判断基準にもなります。",
+ pt:"コアコンピタンス＝模倣困難・複数事業へ展開可能な中核能力"},
+
+{id:"S27",field:"strategy",mid:"ビジネスインダストリ",sub:"ビジネスシステム",a:3,p:1,y:2022,
+ q:"ERPの説明として、最も適切なものはどれか。",
+ c:["顧客からの問合せに自動応答するシステム","設計図面を3次元で作成するシステム","商品の販売時点の情報を収集するシステム","経営資源を一元管理し、全社の業務を統合的に最適化するシステム"],
+ e:"ERP（Enterprise Resource Planning）は、会計・販売・購買・生産・在庫・人事といった基幹業務のデータを単一のデータベースで一元管理し、経営資源の全体最適を図る考え方とシステムです。部門ごとの部分最適を防ぐ効果があります。",
+ pt:"ERP＝基幹業務を一元管理し全社最適へ"},
+
+{id:"S28",field:"strategy",mid:"ビジネスインダストリ",sub:"ビジネスシステム",a:1,
+ q:"CRMの目的として、最も適切なものはどれか。",
+ c:["調達から販売までの物流を効率化する","顧客情報を一元管理し、長期的な顧客関係を強化して売上を伸ばす","工場の生産設備を自動制御する","従業員の勤怠を管理する"],
+ e:"CRM（Customer Relationship Management）は、顧客との接点で得た情報を一元管理し、一人ひとりの顧客に合わせた対応を行うことで、顧客満足度とLTV（顧客生涯価値）を高める仕組みです。営業活動を支援するSFAと組み合わせて導入されることが多いです。",
+ pt:"CRM＝顧客関係の強化、SFA＝営業支援"},
+
+{id:"S29",field:"strategy",mid:"ビジネスインダストリ",sub:"ビジネスシステム",a:2,
+ q:"SCMの説明として、最も適切なものはどれか。",
+ c:["自社の業務プロセスを抜本的に再設計する","顧客の購買履歴から嗜好を分析する","調達・生産・物流・販売をまたぐ供給の流れ全体を最適化する","製品の設計から廃棄までの環境負荷を評価する"],
+ e:"SCM（Supply Chain Management）は、原材料の調達から生産、在庫、物流、販売までのサプライチェーン全体の情報を共有し、全体としてのリードタイム短縮や在庫削減を図る考え方です。",
+ pt:"SCM＝調達から販売までの「流れ」全体を最適化"},
+
+{id:"S30",field:"strategy",mid:"ビジネスインダストリ",sub:"ビジネスシステム",a:0,
+ q:"POSシステムの説明として、最も適切なものはどれか。",
+ c:["販売時点で商品の売上情報を収集し、在庫管理や発注に活用するシステム","工場の設備の稼働状況を監視するシステム","顧客の問合せ履歴を管理するシステム","文書を電子化して保存するシステム"],
+ e:"POS（Point of Sale）は、レジで商品が販売された時点の商品・数量・時刻などの情報を収集するシステムです。集めたデータは在庫管理、品揃えの最適化、需要予測などに活用されます。",
+ pt:"POS＝販売時点情報管理（いつ・何が・いくつ売れたか）"},
+
+{id:"S31",field:"strategy",mid:"ビジネスインダストリ",sub:"エンジニアリングシステム",a:1,
+ q:"CADで作成した設計データを基に、工作機械を制御して製品を加工するシステムはどれか。",
+ c:["CAE","CAM","CIM","MRP"],
+ e:"CAM（Computer Aided Manufacturing）は、CADの設計データから加工手順や工具経路を生成し、工作機械を数値制御して自動加工するシステムです。CAEは設計の妥当性をシミュレーションで評価するもの、MRPは資材所要量計画です。",
+ pt:"CAD＝設計、CAM＝製造、CAE＝解析・シミュレーション"},
+
+{id:"S32",field:"strategy",mid:"ビジネスインダストリ",sub:"e-ビジネス",a:2,
+ q:"ロングテールの説明として、最も適切なものはどれか。",
+ c:["売れ筋商品だけを絞り込んで販売する戦略","期間限定で価格を下げて集客する戦略","販売数は少ないが品揃えを豊富にすることで、合計の売上を大きくする戦略","広告収入を主な収益源とする戦略"],
+ e:"ロングテールは、ネット通販のように陳列・在庫の制約が小さい環境で、販売機会の少ない多数の商品（ロングテール部分）を揃えることで、全体の売上を伸ばす考え方です。",
+ pt:"ロングテール＝少数販売の多数商品の合算で稼ぐ"},
+
+{id:"S33",field:"strategy",mid:"ビジネスインダストリ",sub:"e-ビジネス",a:0,
+ q:"O2Oの説明として、最も適切なものはどれか。",
+ c:["オンライン上の情報発信をきっかけに、実店舗への来店や購買を促す取組み","オンラインだけで完結する商取引","店舗での購買履歴をオンライン広告にのみ利用する取組み","企業間の電子商取引"],
+ e:"O2O（Online to Offline）は、クーポン配信やアプリ通知などオンラインの接点を起点に、実店舗への送客・購買につなげる施策です。逆に実店舗からオンラインへ誘導する取組みはO2Oの逆方向として扱われます。",
+ pt:"O2O＝オンライン→オフライン（実店舗）への送客"},
+
+{id:"S34",field:"strategy",mid:"技術戦略マネジメント",sub:"技術開発戦略の立案",a:3,
+ q:"技術ロードマップの説明として、最も適切なものはどれか。",
+ c:["製品の原価構成を時系列で示した図","従業員のスキル習得状況を一覧にした表","特許の取得件数を競合と比較した図","技術の進展と製品・市場の投入計画を時間軸に沿って対応付けた図"],
+ e:"技術ロードマップは、将来の市場・製品のシナリオと、それを実現する要素技術の開発時期を時間軸上で対応付けた計画図です。研究開発投資の優先順位づけや、事業部門との合意形成に使われます。",
+ pt:"技術ロードマップ＝技術×製品×市場を時間軸で対応付け"},
+
+{id:"S35",field:"strategy",mid:"技術戦略マネジメント",sub:"技術開発戦略の立案",a:1,
+ q:"オープンイノベーションの説明として、最も適切なものはどれか。",
+ c:["自社の研究開発部門だけで新技術を開発する","自社内部の技術に加え、外部の大学・企業・スタートアップの技術やアイデアを組み合わせて革新を起こす","特許を公開せずに社内に秘匿する","競合他社と価格について協定を結ぶ"],
+ e:"オープンイノベーションは、自前主義を脱して外部の知識・技術を取り込み、組織の内外を結びつけて新たな価値を生み出す手法です。自社技術の外部活用（インサイドアウト）も含みます。1はクローズドイノベーションです。",
+ pt:"オープンイノベーション＝外部知の活用で革新"}
+];
+
+/* =========================================================================
+   問題データ — マネジメント系
+   ========================================================================= */
+window.Q_MANAGEMENT = [
+{id:"M01",field:"management",mid:"システム戦略",sub:"情報システム戦略",a:2,p:1,y:2023,
+ q:"エンタープライズアーキテクチャ（EA）の説明として、最も適切なものはどれか。",
+ c:["個々の業務システムを独立して最適化する設計手法","新規システムの開発予算を配分するための会計手法","業務とシステムを全体最適の視点で整理し、標準化と再利用を進める設計手法","ネットワーク機器の構成を階層ごとに設計する手法"],
+ e:"EAは、組織の業務・データ・アプリケーション・技術基盤の4層を全体最適の視点で可視化・整理する手法です。部分最適の排除、業務の標準化、システムの再利用によって、IT投資の最適化と変化への迅速な対応を狙います。",
+ pt:"EA＝業務・データ・アプリ・技術の4層を全体最適で整理"},
+
+{id:"M02",field:"management",mid:"システム戦略",sub:"情報システム戦略",a:0,
+ q:"SOA（サービス指向アーキテクチャ）の説明として、最も適切なものはどれか。",
+ c:["業務機能を「サービス」という疎結合な部品として構築し、組み合わせてシステムを構成する設計思想","すべての処理を1つの巨大なプログラムにまとめる設計思想","データベースを正規化せずに高速化を優先する設計思想","ネットワークを特定のベンダ製品で統一する設計思想"],
+ e:"SOAは、業務機能を独立性の高いサービスとして実装し、それらを組み合わせてシステムを構築する考え方です。サービス間の結合度が低いため、変更や再利用がしやすくなります。これをAPIとして公開・連携する形態がマイクロサービスです。",
+ pt:"SOA＝サービス単位の疎結合な組合せ"},
+
+{id:"M03",field:"management",mid:"システム戦略",sub:"情報システム戦略",a:3,
+ q:"BYODの説明として、最も適切なものはどれか。",
+ c:["企業が所有する端末を従業員に貸与する制度","業務システムを外部のクラウド事業者に委託する形態","本社のシステムを海外拠点に複製する形態","従業員が個人所有の端末を業務に利用すること"],
+ e:"BYOD（Bring Your Own Device）は、従業員が私物のスマートフォンやPCを業務に利用する形態です。コスト削減や利便性の向上が期待できる一方、情報漏えい対策としてMDMの導入や利用ルールの整備が必要になります。",
+ pt:"BYOD＝私物端末の業務利用。対策はMDM＋ルール整備"},
+
+{id:"M04",field:"management",mid:"システム戦略",sub:"業務プロセス",a:1,
+ q:"BPRの説明として、最も適切なものはどれか。",
+ c:["現在の業務をそのままシステム化して効率化する","業務プロセスを根本から見直し、抜本的に再設計する","業務の一部を外部企業に委託する","部署ごとに業務手順を細かく標準化する"],
+ e:"BPR（Business Process Reengineering）は、コスト・品質・スピードなどの指標を大幅に改善するために、既存の業務プロセスを根本的に見直して再設計することです。単なるシステム化や改善ではなく「抜本的な再設計」がポイントです。",
+ pt:"BPR＝業務を根本から再設計（リストラではなく再構築）"},
+
+{id:"M05",field:"management",mid:"システム戦略",sub:"業務プロセス",a:2,
+ q:"ワークフローシステムを導入する主な目的として、最も適切なものはどれか。",
+ c:["売上データを集計して経営指標を算出する","工場の生産設備を自動制御する","申請・承認などの業務手続きを電子的に流れ図どおり進め、進捗を可視化する","顧客からの問合せに自動で回答する"],
+ e:"ワークフローシステムは、稟議・経費精算・休暇申請などの手続きをあらかじめ定義した経路に沿って電子的に回付し、承認状況を可視化します。紙の回覧の削減、滞留の把握、承認の迅速化が効果です。",
+ pt:"ワークフロー＝手続きの電子化＋進捗の可視化"},
+
+{id:"M06",field:"management",mid:"システム戦略",sub:"ソリューションビジネス",a:1,
+ q:"SaaSの説明として、最も適切なものはどれか。",
+ c:["仮想サーバやストレージなどのインフラだけを提供する","アプリケーションの機能をインターネット経由で利用させる","プログラムの実行環境（ミドルウェア）だけを提供する","自社データセンターに構築したシステムを貸し出す"],
+ e:"SaaS（Software as a Service）は、利用者はソフトウェアそのものをサービスとして利用します。PaaSはアプリ実行環境、IaaSはインフラを提供する形態です。利用者はハードウェアやソフトウェアの保守運用を持つ必要がありません。",
+ pt:"SaaS＝完成アプリ、PaaS＝実行環境、IaaS＝インフラ"},
+
+{id:"M07",field:"management",mid:"システム戦略",sub:"ソリューションビジネス",a:0,
+ q:"クラウドサービスの利用形態のうち、複数の企業が共通のシステム基盤を共有して利用する形態はどれか。",
+ c:["パブリッククラウド","プライベートクラウド","コミュニティクラウド","ハイブリッドクラウド"],
+ e:"パブリッククラウドは、クラウド事業者が不特定多数の利用者に提供するサービスです。特定の企業グループで共用するのはコミュニティクラウド、自社専用はプライベートクラウド、これらを組み合わせて使うのがハイブリッドクラウドです。",
+ pt:"パブリック＝不特定多数、コミュニティ＝特定グループ、プライベート＝自社専用"},
+
+{id:"M08",field:"management",mid:"システム戦略",sub:"システム活用促進・評価",a:2,
+ q:"IT投資対効果を評価する手法のうち、投資によって得られるキャッシュフローを現在価値に割り引いて評価する指標はどれか。",
+ c:["ROI","回収期間法","NPV（正味現在価値）","TCO"],
+ e:"NPVは、将来のキャッシュフローを割引率で現在価値に換算し、初期投資額を差し引いた値です。NPVが正なら投資に価値があると判断します。ROIは投資利益率、TCOは総所有コストで、いずれも時間価値を考慮しません。",
+ pt:"NPV＝将来CFを割引いて現在価値に。正なら投資価値あり"},
+
+{id:"M09",field:"management",mid:"システム戦略",sub:"システム活用促進・評価",a:3,
+ q:"TCOの説明として、最も適切なものはどれか。",
+ c:["システム開発の初期費用のみを合計したもの","年間のライセンス料のみを合計したもの","システムが生み出す売上高の総額","導入から運用・保守・廃棄までに要する総コスト"],
+ e:"TCO（Total Cost of Ownership）は、ハード・ソフトの購入費だけでなく、導入、運用、保守、教育、廃棄までを含めた総所有コストです。クラウドとオンプレミスの比較などで用います。初期費用だけで比較すると判断を誤ります。",
+ pt:"TCO＝導入〜廃棄までの総コスト"},
+
+{id:"M10",field:"management",mid:"システム開発技術",sub:"ソフトウェアライフサイクルプロセス",a:1,p:1,y:2022,
+ q:"ソフトウェアのライフサイクルプロセスのうち、システムの利用者と開発者の間で合意する「要件」を明確にするプロセスはどれか。",
+ c:["設計プロセス","要件定義プロセス","実装プロセス","保守プロセス"],
+ e:"要件定義プロセスでは、利用者の業務やニーズを明らかにし、実現すべき機能・性能・制約を「要件」として定義して関係者間で合意します。ここでの認識のずれが後工程の手戻りを大きくするため、最も重要といわれます。",
+ pt:"要件定義＝「何を作るか」を合意する工程"},
+
+{id:"M11",field:"management",mid:"システム開発技術",sub:"ソフトウェアライフサイクルプロセス",a:2,
+ q:"ウォーターフォールモデルの説明として、最も適切なものはどれか。",
+ c:["短い期間で設計・実装・テストを繰り返す","動作する試作品を利用者に見せながら完成させる","要件定義からテストまでを順番に、後戻りせずに進める","利用者と開発者がペアでプログラミングする"],
+ e:"ウォーターフォールモデルは、要件定義→設計→実装→テスト→運用の工程を上流から順に進める開発モデルです。進捗管理がしやすい一方、後工程での仕様変更に弱く、手戻りコストが大きくなります。",
+ pt:"ウォーターフォール＝順序どおり一方向。変更に弱い"},
+
+{id:"M12",field:"management",mid:"システム開発技術",sub:"ソフトウェアライフサイクルプロセス",a:0,
+ q:"プロトタイピングモデルの説明として、最も適切なものはどれか。",
+ c:["試作品を作って利用者の要求を確認しながら開発を進める","すべてのテストを完了してから設計を開始する","開発者だけが仕様を決めて一気に完成させる","本番環境で直接プログラムを修正する"],
+ e:"プロトタイピングモデルは、早期に試作品（プロトタイプ）を作成して利用者に確認してもらい、要求の誤解や不足を洗い出しながら開発を進めます。要件が曖昧な場合に有効ですが、試作品の作り直しが増えるリスクもあります。",
+ pt:"プロトタイピング＝試作で要求を確認"},
+
+{id:"M13",field:"management",mid:"システム開発技術",sub:"ソフトウェアライフサイクルプロセス",a:1,
+ q:"アジャイル開発の特徴として、最も適切なものはどれか。",
+ c:["すべての設計書を完成させてから実装に入る","短い反復（イテレーション）で動くソフトウェアを提供し、変化に適応する","要件は開発開始後に変更してはならない","テスト工程を省略して納期を短縮する"],
+ e:"アジャイル開発は、短期間の反復で設計・実装・テストを行い、動作するソフトウェアを継続的に提供します。利用者からのフィードバックを取り込みながら、変化する要求に適応できる点が特徴です。テストは省略せず、むしろ反復内で実施します。",
+ pt:"アジャイル＝短い反復＋動くソフト＋変化への適応"},
+
+{id:"M14",field:"management",mid:"システム開発技術",sub:"ソフトウェアライフサイクルプロセス",a:3,
+ q:"スクラムにおける「スプリントレビュー」の目的として、最も適切なものはどれか。",
+ c:["チームの課題を整理して次のスプリントの改善項目を決める","毎日15分で進捗と障害を共有する","プロダクトバックログの優先順位を決める","スプリントで完成したインクリメントを関係者に示してフィードバックを得る"],
+ e:"スプリントレビューは、スプリントの最後に完成した成果物（インクリメント）をステークホルダーに披露し、フィードバックを得てバックログを見直す場です。1はレトロスペクティブ、2はデイリースクラム、3はリファインメントの説明です。",
+ pt:"スクラム：レビュー＝成果物の披露、レトロ＝振り返り"},
+
+{id:"M15",field:"management",mid:"システム開発技術",sub:"要件定義",a:2,
+ q:"非機能要件に該当するものはどれか。",
+ c:["商品を検索して購入できること","売上データを月次で集計できること","画面の応答時間が3秒以内であること","会員登録時にメールアドレスを登録できること"],
+ e:"非機能要件は、機能そのものではなく、性能・可用性・セキュリティ・運用性・移行性など、システムの品質や制約に関する要件です。応答時間は性能要件の代表例です。1・2・4は機能要件に該当します。",
+ pt:"非機能要件＝性能・可用性・セキュリティ・運用性"},
+
+{id:"M16",field:"management",mid:"システム開発技術",sub:"要件定義",a:0,
+ q:"要件定義の工程で作成する文書として、最も適切なものはどれか。",
+ c:["要件定義書","詳細設計書","テスト結果報告書","操作マニュアル"],
+ e:"要件定義書は、業務要件や機能要件、非機能要件、前提条件などをまとめ、利用者と開発者の合意内容を記録する文書です。詳細設計書は設計工程、テスト結果報告書はテスト工程で作成します。",
+ pt:"工程ごとの成果物：要件定義書→設計書→プログラム→テスト報告書"},
+
+{id:"M17",field:"management",mid:"システム開発技術",sub:"設計",a:1,
+ q:"モジュールの独立性を高めるための指針として、最も適切なものはどれか。",
+ c:["モジュール間の結合度を高め、モジュール内の凝集度を低くする","モジュール間の結合度を低くし、モジュール内の凝集度を高くする","結合度と凝集度の両方を高くする","結合度と凝集度の両方を低くする"],
+ e:"良い設計は「高凝集・低結合」です。凝集度が高いほどモジュール内の関連が強く、結合度が低いほどモジュール間の依存が少ないため、保守性・再利用性が向上します。",
+ pt:"高凝集・低結合が良い設計"},
+
+{id:"M18",field:"management",mid:"システム開発技術",sub:"設計",a:3,
+ q:"UMLのユースケース図の説明として、最も適切なものはどれか。",
+ c:["クラスの属性と操作、関連を表す","オブジェクト間のメッセージのやり取りを時系列で表す","状態の遷移を表す","システムが提供する機能と、それを利用するアクターとの関係を表す"],
+ e:"ユースケース図は、利用者（アクター）がシステムに対して行う操作や、システムが提供する機能のまとまり（ユースケース）を表します。1はクラス図、2はシーケンス図、3は状態機械図です。",
+ pt:"ユースケース図＝アクターと機能の関係"},
+
+{id:"M19",field:"management",mid:"システム開発技術",sub:"実装・テスト",a:2,p:1,y:2023,
+ q:"ホワイトボックステストの説明として、最も適切なものはどれか。",
+ c:["利用者の操作手順に沿って画面からテストする","仕様書に書かれた機能が正しく動くかを確認する","プログラムの内部構造（分岐や条件）に着目してテストする","本番データを使って負荷をかけてテストする"],
+ e:"ホワイトボックステストは、プログラムの内部ロジックを対象に、命令の網羅率や分岐の網羅率などの基準でテストケースを設計します。2はブラックボックステストの説明です。",
+ pt:"ホワイトボックス＝内部構造、ブラックボックス＝入出力"},
+
+{id:"M20",field:"management",mid:"システム開発技術",sub:"実装・テスト",a:1,
+ q:"システムテストのうち、システムに想定以上の負荷をかけて処理能力や限界を確認するテストはどれか。",
+ c:["機能テスト","負荷テスト","回帰テスト","受入テスト"],
+ e:"負荷テストは、同時利用者数や処理量を増やして、応答時間やスループット、資源使用率を測定し、性能要件を満たすか、限界点がどこかを確認します。回帰テストは修正による影響の有無を確認するテストです。",
+ pt:"負荷テスト＝処理能力・限界の確認"},
+
+{id:"M21",field:"management",mid:"システム開発技術",sub:"実装・テスト",a:0,
+ q:"リグレッションテスト（回帰テスト）の目的として、最も適切なものはどれか。",
+ c:["プログラムを修正したことで、既存の機能に影響が出ていないことを確認する","新規機能が仕様どおりに動作することを確認する","利用者が受け入れ可能かを確認する","セキュリティの脆弱性がないことを確認する"],
+ e:"リグレッションテストは、修正や機能追加によって既存の機能が壊れていないかを確認するテストです。自動化されたテストを継続的に実行する体制が有効で、アジャイル開発では特に重要になります。",
+ pt:"回帰テスト＝修正による既存機能への影響確認"},
+
+{id:"M22",field:"management",mid:"システム開発技術",sub:"ソフトウェア保守",a:2,
+ q:"ソフトウェア保守のうち、環境の変化や性能改善のためにプログラムを改良する保守はどれか。",
+ c:["是正保守","緊急保守","改善保守","予防保守"],
+ e:"保守は一般に、発見された不具合を直す是正保守、改善要求に応える改善保守、障害発生を未然に防ぐ予防保守、変化した環境に適応させる適応保守に分類されます。性能改善や保守性向上のための改良は改善保守です。",
+ pt:"保守＝是正・改善・予防・適応"},
+
+{id:"M23",field:"management",mid:"プロジェクトマネジメント",sub:"プロジェクトマネジメント",a:1,p:1,y:2024,
+ q:"WBS（Work Breakdown Structure）の説明として、最も適切なものはどれか。",
+ c:["プロジェクトの組織図を階層で表したもの","プロジェクトの成果物や作業を階層的に分解したもの","作業の順序関係を矢印で表したもの","要員のスキルを一覧にしたもの"],
+ e:"WBSは、プロジェクトで必要となる成果物や作業を、管理できる大きさになるまで階層的に分解したものです。作業の漏れ防止、見積りの基礎、進捗管理の単位として使います。3はアローダイアグラム（ネットワーク図）です。",
+ pt:"WBS＝作業を階層分解。漏れ防止と見積りの基礎"},
+
+{id:"M24",field:"management",mid:"プロジェクトマネジメント",sub:"プロジェクトマネジメント",a:3,
+ q:"アローダイアグラムにおいて、クリティカルパスとは何か。",
+ c:["作業時間が最も短い経路","費用が最も少なく済む経路","関係者が最も多い経路","プロジェクト全体の所要日数を決める、最も時間のかかる経路"],
+ e:"クリティカルパスは、開始から終了までの経路のうち所要時間が最長の経路で、プロジェクト全体の最短完了日数を決定します。この経路上の作業が1日遅れると全体も1日遅れるため、重点的に管理します。",
+ pt:"クリティカルパス＝最長経路＝全体の所要日数を決める"},
+
+{id:"M25",field:"management",mid:"プロジェクトマネジメント",sub:"プロジェクトマネジメント",a:0,
+ q:"あるプロジェクトのアローダイアグラムで、A(3日)→B(4日)→D(2日)の経路と、A(3日)→C(7日)→D(2日)の経路があるとき、全体の所要日数は何日か。",
+ c:["12日","9日","10日","14日"],
+ e:"A→B→Dは3+4+2=9日、A→C→Dは3+7+2=12日です。クリティカルパスは最長の12日の経路なので、全体の所要日数は12日になります。短い経路には余裕時間（フロート）があります。",
+ pt:"複数経路は「最長」を全体日数とする"},
+
+{id:"M26",field:"management",mid:"プロジェクトマネジメント",sub:"プロジェクトマネジメント",a:2,
+ q:"プロジェクトのリスク対応のうち、「リスクの発生確率と影響を小さくするために事前の対策をとる」ものを何というか。",
+ c:["リスク回避","リスク受容","リスク軽減","リスク転嫁"],
+ e:"リスク対応には、発生の原因をなくす回避、確率や影響を下げる軽減、保険や外部委託で他者に移す転嫁、影響が小さいと認めて備える受容があります。事前対策で確率・影響を下げるのは軽減です。",
+ pt:"リスク対応＝回避・軽減・転嫁・受容"},
+
+{id:"M27",field:"management",mid:"プロジェクトマネジメント",sub:"プロジェクトマネジメント",a:1,
+ q:"EVM（アーンドバリューマネジメント）で用いる指標のうち、出来高（EV）から実コスト（AC）を引いた値は何を表すか。",
+ c:["スケジュールの進み具合","コストの余裕または超過","品質の達成度","リスクの大きさ"],
+ e:"EV−ACはコスト差異（CV）で、正なら予算内、負なら予算超過を意味します。進捗はEV−PV（スケジュール差異SV）や、EV÷PV（スケジュール効率SPI）で判断します。",
+ pt:"CV＝EV−AC（コスト）、SV＝EV−PV（進捗）"},
+
+{id:"M28",field:"management",mid:"プロジェクトマネジメント",sub:"プロジェクトマネジメント",a:3,
+ q:"プロジェクト憲章の説明として、最も適切なものはどれか。",
+ c:["プロジェクト終了時に提出する最終報告書","作業手順を詳細に記述した設計書","メンバーの勤務評価を記録する文書","プロジェクトの目的・目標・体制・権限を公式に認める文書"],
+ e:"プロジェクト憲章は、プロジェクトの存在を公式に認可し、目的・目標・スコープ・主要な成果物・プロジェクトマネージャの権限などを明示する文書です。プロジェクト開始時に発行されます。",
+ pt:"プロジェクト憲章＝プロジェクトの公式な認可文書"},
+
+{id:"M29",field:"management",mid:"サービスマネジメント",sub:"サービスマネジメントプロセス",a:2,p:1,y:2022,
+ q:"ITILにおけるインシデント管理の目的として、最も適切なものはどれか。",
+ c:["サービスを根本から改善するための変更を計画する","将来の需要を予測してサービス能力を計画する","サービスの中断をできるだけ早く回復し、業務への影響を最小化する","構成要素の関係を記録して管理する"],
+ e:"インシデント管理は、サービスの中断や品質低下が発生したときに、暫定的な回避策を含めてできるだけ早くサービスを復旧させ、ビジネスへの影響を最小化することを目的とします。原因の根本追究は問題管理が担当します。",
+ pt:"インシデント管理＝早期復旧、問題管理＝根本原因"},
+
+{id:"M30",field:"management",mid:"サービスマネジメント",sub:"サービスマネジメントプロセス",a:1,
+ q:"ITILにおける問題管理の説明として、最も適切なものはどれか。",
+ c:["利用者からの問合せに1次対応する","インシデントの根本原因を追究し、再発を防止する","変更を承認し、リリースを統制する","サービスレベルを合意する"],
+ e:"問題管理は、複数のインシデントの背後にある根本原因を特定し、既知のエラーとして記録・管理することで再発を防ぎます。1はサービスデスク、3は変更管理・リリース管理の役割です。",
+ pt:"問題管理＝再発防止（根本原因の除去）"},
+
+{id:"M31",field:"management",mid:"サービスマネジメント",sub:"サービスマネジメントプロセス",a:0,
+ q:"SLAの説明として、最も適切なものはどれか。",
+ c:["サービス提供者と利用者の間で合意する、サービスの品質水準と責任範囲","サービス提供者が一方的に定める料金表","システムの構成情報を記録した台帳","障害発生時の連絡先一覧"],
+ e:"SLA（Service Level Agreement）は、サービスの可用性・応答時間・復旧時間などの品質水準と、守れなかった場合の責任を、提供者と利用者の間で合意した文書です。合意に至らない目標値はSLMの内部目標として区別します。",
+ pt:"SLA＝提供者と利用者の品質水準の合意"},
+
+{id:"M32",field:"management",mid:"サービスマネジメント",sub:"サービスの運用",a:3,
+ q:"サービスデスクの機能のうち、専門知識をもつスタッフが高度な問合せに対応するレベルはどれか。",
+ c:["0次サポート","1次サポート","2次サポート","3次サポート"],
+ e:"一般に、自動応答やFAQが0次、初期対応の窓口が1次、専門スタッフによる詳細対応が2次、ベンダや開発部門などによる根本対応が3次と呼ばれます。利用者と直接やり取りしながら専門的に対応するのは2次サポートです。",
+ pt:"0次＝自動応答、1次＝窓口、2次＝専門、3次＝ベンダ・開発"},
+
+{id:"M33",field:"management",mid:"サービスマネジメント",sub:"サービスの運用",a:1,
+ q:"データのバックアップ方式のうち、毎日すべてのデータをバックアップする方式はどれか。",
+ c:["差分バックアップ","フルバックアップ","増分バックアップ","スナップショット"],
+ e:"フルバックアップは対象データ全体を毎回取得するため、復旧は1回のリストアで済みますが、時間と容量を多く消費します。差分は前回のフル以降の変更分、増分は前回のバックアップ以降の変更分を取得します。",
+ pt:"フル＝全体、差分＝前回フル以降、増分＝前回バックアップ以降"},
+
+{id:"M34",field:"management",mid:"サービスマネジメント",sub:"ファシリティマネジメント",a:2,
+ q:"データセンターのファシリティ対策として、最も適切なものはどれか。",
+ c:["サーバのOSに最新のセキュリティパッチを適用する","データベースのアクセス権限を最小化する","無停電電源装置（UPS）や自家発電設備を設置する","通信データを暗号化する"],
+ e:"ファシリティマネジメントは、建物・電源・空調・消火設備などの設備環境を管理することです。UPSや非常用発電機は停電時の稼働継続のための設備対策です。1〜2はシステム・情報の管理、4は通信の対策です。",
+ pt:"ファシリティ＝電源・空調・消火・耐震などの設備対策"},
+
+{id:"M35",field:"management",mid:"システム監査",sub:"システム監査",a:1,p:1,y:2023,
+ q:"システム監査人の役割として、最も適切なものはどれか。",
+ c:["監査対象システムの設計と開発を自ら担当する","監査対象から独立した立場で、情報システムの管理状況を検証・評価し、改善を勧告する","経営会議でIT投資の最終決定を行う","システムの運用業務を日常的に代行する"],
+ e:"システム監査人は、監査対象部門から独立した立場で、情報システムの企画・開発・運用・保守が適切に行われているかを検証・評価し、問題点について改善勧告を行います。自ら開発・運用を行うと独立性が損なわれます。",
+ pt:"システム監査人＝独立した立場で検証・評価・改善勧告"},
+
+{id:"M36",field:"management",mid:"システム監査",sub:"システム監査",a:3,
+ q:"システム監査における「予備調査」の目的として、最も適切なものはどれか。",
+ c:["監査報告書を作成する","改善勧告に対するフォローアップを行う","本番環境でデータの完全性を検証する","監査計画を具体化するために、対象の概要や業務内容を把握する"],
+ e:"予備調査は本調査の前に行い、監査対象の業務概要、組織、使用しているシステム、過去の監査結果などを把握して、監査の着眼点や手続きを具体化します。本調査では証拠を収集して検証・評価します。",
+ pt:"予備調査＝概要把握と監査計画の具体化、本調査＝証拠収集と評価"},
+
+{id:"M37",field:"management",mid:"システム監査",sub:"システム監査",a:0,
+ q:"システム監査基準における「監査証拠」の説明として、最も適切なものはどれか。",
+ c:["監査意見を裏付けるために収集する記録・資料・事実","監査人の資格を証明する文書","監査の予算を示す文書","被監査部門が作成する改善計画"],
+ e:"監査証拠は、監査人が結論を導き、監査意見を裏付けるために収集する資料や事実です。十分性・適切性が求められ、ヒアリング、資料閲覧、観察、分析的手続などで収集します。",
+ pt:"監査証拠＝意見の裏付け。十分性と適切性が必要"},
+
+{id:"M38",field:"management",mid:"システム監査",sub:"システム監査",a:2,
+ q:"システム監査の手順として、一般的な流れはどれか。",
+ c:["本調査→予備調査→監査報告→フォローアップ","監査報告→予備調査→本調査→フォローアップ","監査計画→予備調査→本調査→監査報告→フォローアップ","フォローアップ→本調査→予備調査→監査報告"],
+ e:"システム監査は、監査計画の策定、予備調査、本調査（証拠収集・検証）、監査報告（意見表明・改善勧告）、フォローアップ（改善状況の確認）の順に進めます。",
+ pt:"計画→予備→本調査→報告→フォローアップ"},
+
+{id:"M39",field:"management",mid:"システム監査",sub:"システム監査",a:1,
+ q:"システム監査における「協調型監査」の特徴として、最も適切なものはどれか。",
+ c:["監査人が一方的に問題点を指摘して終了する","被監査部門と協力しながら改善につなげることを重視する","監査結果を公表しないことを条件とする","外部の監査法人にすべてを委託する"],
+ e:"協調型監査は、監査人が被監査部門とコミュニケーションを取りながら、問題の背景を共有し、実効性のある改善策の策定を支援する考え方です。指摘することが目的ではなく、組織の改善が目的です。",
+ pt:"協調型監査＝被監査部門と協力して改善へ"},
+
+{id:"M40",field:"management",mid:"システム監査",sub:"システム監査",a:3,
+ q:"システム監査人が職業倫理として遵守すべき事項に該当しないものはどれか。",
+ c:["監査で知り得た情報の守秘","公正かつ誠実な態度の保持","監査業務に必要な専門能力の維持向上","監査結果を被監査部門の同意がある場合に限り報告する"],
+ e:"監査結果は、被監査部門の同意の有無にかかわらず、監査依頼者（経営者など）に報告する義務があります。守秘義務、公正・誠実、専門能力の維持向上は職業倫理の基本です。",
+ pt:"監査報告は依頼者へ。同意の有無で変えられない"}
+];
+
+/* =========================================================================
+   問題データ — テクノロジ系
+   ========================================================================= */
+window.Q_TECHNOLOGY = [
+{id:"T01",field:"technology",mid:"基礎理論",sub:"離散数学",a:1,p:1,y:2023,
+ q:"2進数 1011 を10進数で表したものはどれか。",
+ c:["9","11","13","15"],
+ e:"1011(2) = 1×2³ + 0×2² + 1×2¹ + 1×2⁰ = 8 + 0 + 2 + 1 = 11 です。各桁の重み（8,4,2,1）を足すと求められます。",
+ pt:"2進数→10進数は各桁×2の累乗の和"},
+
+{id:"T02",field:"technology",mid:"基礎理論",sub:"離散数学",a:2,
+ q:"10進数の 0.5 を2進数で表したものはどれか。",
+ c:["0.01","0.11","0.1","0.101"],
+ e:"小数部は2を掛けて整数部を取り出す操作を繰り返します。0.5×2=1.0 → 整数部1、小数部0で終了。よって0.1(2)になります。",
+ pt:"小数の2進数化は「2を掛けて整数部を拾う」"},
+
+{id:"T03",field:"technology",mid:"基礎理論",sub:"離散数学",a:0,
+ q:"論理演算において、A＝1、B＝0 のとき、A AND B と A OR B の値の組合せとして正しいものはどれか。",
+ c:["AND＝0、OR＝1","AND＝1、OR＝0","AND＝1、OR＝1","AND＝0、OR＝0"],
+ e:"AND（論理積）は両方が1のときだけ1なので0、OR（論理和）はどちらかが1なら1なので1になります。なおXOR（排他的論理和）は異なるときに1なので1です。",
+ pt:"ANDは両方1で1、ORはどちらか1で1"},
+
+{id:"T04",field:"technology",mid:"基礎理論",sub:"情報理論",a:3,
+ q:"1画素あたり24ビットの色情報をもつ、縦600×横800画素の非圧縮画像のデータ量は約何Mバイトか。",
+ c:["約0.5Mバイト","約1.0Mバイト","約1.2Mバイト","約1.4Mバイト"],
+ e:"600×800＝480,000画素、×24ビット＝11,520,000ビット。8で割ると1,440,000バイト＝約1.44Mバイトです（1M＝10⁶で計算）。1画素24ビットはフルカラー（RGB各8ビット）に相当します。",
+ pt:"画像容量＝縦×横×ビット深度÷8"},
+
+{id:"T05",field:"technology",mid:"基礎理論",sub:"情報理論",a:1,
+ q:"ある文字の出現確率が高いほど短い符号を割り当てることで、データを圧縮する手法はどれか。",
+ c:["ランレングス符号化","ハフマン符号化","チェックサム","パリティチェック"],
+ e:"ハフマン符号化は、出現頻度の高い文字に短いビット列、低い文字に長いビット列を割り当てる可逆圧縮方式です。ランレングスは同じ値の連続を「値＋個数」で表す方式です。",
+ pt:"ハフマン＝出現頻度に応じた可変長符号"},
+
+{id:"T06",field:"technology",mid:"基礎理論",sub:"応用数学",a:2,
+ q:"ある処理を100件行うのに、1件目は10秒、以降1件ごとに前の件数の1.2倍の時間がかかるとき、この処理の計算量のオーダーはどれか。",
+ c:["O(1)","O(n)","O(n log n)","O(2ⁿ)"],
+ e:"1件ごとに処理時間が1.2倍になっていく（指数関数的に増加する）場合、nが増えると計算量が爆発的に増大し、O(2ⁿ)のような指数オーダーになります。O(1)は一定、O(n)は比例、O(n log n)はソートなどで現れます。",
+ pt:"計算量オーダー：1＜log n＜n＜n log n＜n²＜2ⁿ"},
+
+{id:"T07",field:"technology",mid:"基礎理論",sub:"応用数学",a:0,
+ q:"複数の事象が同時に起こる確率を求める際に用いる、事象Aが起こる確率と事象Bが起こる確率の積で表されるものはどれか。",
+ c:["同時確率","条件付き確率","周辺確率","期待値"],
+ e:"事象AとBが独立であるとき、同時に起こる確率P(A∩B)＝P(A)×P(B)です。条件付き確率はP(B|A)＝P(A∩B)÷P(A)で、Aが起きた条件下でのBの確率を表します。",
+ pt:"独立なら同時確率＝積。条件付き確率＝同時÷前提"},
+
+{id:"T08",field:"technology",mid:"基礎理論",sub:"アルゴリズムとプログラミング",a:1,
+ q:"配列の要素を、隣り合う要素を比較して交換することを繰り返し、整列させるアルゴリズムはどれか。",
+ c:["クイックソート","バブルソート","マージソート","2分探索"],
+ e:"バブルソート（基本交換法）は、隣接する要素を比較・交換して大きい値を端へ移動させることを繰り返す整列アルゴリズムです。実装は簡単ですが、平均計算量はO(n²)で大規模データには不向きです。",
+ pt:"バブルソート＝隣接交換の繰り返し。O(n²)"},
+
+{id:"T09",field:"technology",mid:"基礎理論",sub:"アルゴリズムとプログラミング",a:2,
+ q:"整列済みの配列から目的の値を探すとき、探索範囲を半分ずつ絞り込んでいく手法はどれか。",
+ c:["線形探索","ハッシュ探索","2分探索","深さ優先探索"],
+ e:"2分探索は、整列済みのデータの中央値と比較し、目的値がそれより大きいか小さいかで探索範囲を半分に絞ります。計算量はO(log n)で高速ですが、事前に整列されている必要があります。",
+ pt:"2分探索＝整列済みが前提。O(log n)"},
+
+{id:"T10",field:"technology",mid:"基礎理論",sub:"アルゴリズムとプログラミング",a:0,
+ q:"プログラムの流れを表す図のうち、分岐（条件によって処理を分ける）をひし形で表すものはどれか。",
+ c:["フローチャート","DFD","E-R図","状態遷移図"],
+ e:"フローチャート（流れ図）は、処理を長方形、判断（分岐）をひし形、データの入出力を平行四辺形、開始・終了をだ円で表します。DFDはデータの流れ、E-R図は実体と関連を表します。",
+ pt:"フローチャート：ひし形＝判断・分岐"},
+
+{id:"T11",field:"technology",mid:"基礎理論",sub:"アルゴリズムとプログラミング",a:3,
+ q:"プログラムの制御構造のうち、「ある条件が満たされている間、処理を繰り返す」ものを何というか。",
+ c:["順次構造","選択構造","再帰構造","反復（繰り返し）構造"],
+ e:"制御構造の基本は、上から順に実行する順次構造、条件で分岐する選択構造、条件を満たす間繰り返す反復構造の3つです。再帰は関数が自分自身を呼び出す手法で、制御構造の分類とは別の概念です。",
+ pt:"基本3構造＝順次・選択・反復"},
+
+{id:"T12",field:"technology",mid:"基礎理論",sub:"アルゴリズムとプログラミング",a:2,
+ q:"変数の値を一時的に保存しておくために使われる、後に入れたものを先に取り出すデータ構造はどれか。",
+ c:["キュー","配列","スタック","リスト"],
+ e:"スタックはLIFO（Last In First Out：後入れ先出し）のデータ構造で、関数の呼び出し履歴やUndo機能に使われます。キューはFIFO（先入れ先出し）で、印刷待ち行列などに使われます。",
+ pt:"スタック＝LIFO、キュー＝FIFO"},
+
+{id:"T13",field:"technology",mid:"コンピュータ構成要素",sub:"プロセッサ",a:1,p:1,y:2024,
+ q:"CPUの性能指標である「クロック周波数」の説明として、最も適切なものはどれか。",
+ c:["1秒間に実行できる命令の数","1秒間に発生するクロックパルスの回数","CPUが一度に処理できるデータのビット幅","CPUが内蔵する演算器の個数"],
+ e:"クロック周波数は、CPUが処理のタイミングをとるクロックパルスの1秒あたりの回数で、Hz（ヘルツ）で表されます。一般に高いほど処理が速いですが、実際の性能は1クロックあたりの処理内容やコア数にも左右されます。",
+ pt:"クロック周波数＝1秒あたりのパルス数（Hz）"},
+
+{id:"T14",field:"technology",mid:"コンピュータ構成要素",sub:"プロセッサ",a:0,
+ q:"CPUの高速化手法のうち、1つの命令の処理を複数の段階に分け、異なる命令の各段階を並行して実行する方式はどれか。",
+ c:["パイプライン処理","デュアルコア","キャッシュメモリ","DMA"],
+ e:"パイプライン処理は、命令の取得・解読・実行などの段階をずらして並行処理し、スループットを向上させます。分岐命令が発生するとパイプラインが乱れる（分岐ハザード）ため、分岐予測などの技術が併用されます。",
+ pt:"パイプライン＝命令の段階を並行実行"},
+
+{id:"T15",field:"technology",mid:"コンピュータ構成要素",sub:"メモリ",a:2,
+ q:"キャッシュメモリの説明として、最も適切なものはどれか。",
+ c:["電源を切ると内容が消える補助記憶装置","CPUと主記憶の速度差を埋めるために、主記憶より高速で小容量の記憶装置","大容量で安価な補助記憶装置","データを永続的に保存する光ディスク"],
+ e:"キャッシュメモリは、CPUと主記憶装置の処理速度の差を埋めるために、CPU内部や近傍に置かれる高速・小容量のメモリです。頻繁に使うデータを置くことで、主記憶へのアクセス回数を減らします。",
+ pt:"キャッシュ＝CPUと主記憶の速度差を埋める高速小容量メモリ"},
+
+{id:"T16",field:"technology",mid:"コンピュータ構成要素",sub:"メモリ",a:3,
+ q:"DRAMとSRAMの比較として、正しいものはどれか。",
+ c:["SRAMの方が大容量で安価である","DRAMの方が高速である","どちらも電源を切っても内容が保持される","SRAMは高速だが高価で、DRAMは安価だがリフレッシュが必要"],
+ e:"SRAMはフリップフロップ回路で構成され高速ですが、1ビットあたりの回路が大きく高価です。DRAMはコンデンサに電荷を蓄える方式で集積度が高く安価ですが、時間とともに電荷が失われるためリフレッシュ動作が必要です。どちらも揮発性です。",
+ pt:"SRAM＝高速・高価・リフレッシュ不要、DRAM＝安価・リフレッシュ必要"},
+
+{id:"T17",field:"technology",mid:"コンピュータ構成要素",sub:"入出力デバイス",a:1,
+ q:"RFIDの説明として、最も適切なものはどれか。",
+ c:["レーザーでバーコードを読み取る装置","電波を用いて非接触でタグの情報を読み書きする仕組み","指紋や静脈など生体情報で個人を識別する仕組み","赤外線で人感を検知するセンサ"],
+ e:"RFID（Radio Frequency Identification）は、ICタグとリーダーの間で電波を使って非接触で情報をやり取りする技術です。ICカードによる入退室管理、商品の流通管理、自動料金収受などに利用されます。",
+ pt:"RFID＝電波で非接触にICタグを読み書き"},
+
+{id:"T18",field:"technology",mid:"コンピュータ構成要素",sub:"入出力デバイス",a:2,
+ q:"液晶ディスプレイの性能指標のうち、画面の解像度を表すものはどれか。",
+ c:["リフレッシュレート","応答時間","1920×1080ドット","視野角"],
+ e:"解像度は画面を構成する画素（ドット）の数で表し、1920×1080は横1920×縦1080ドットであることを示します。リフレッシュレートは1秒間の画面更新回数、応答時間は色の変化に要する時間です。",
+ pt:"解像度＝横×縦のドット数"},
+
+{id:"T19",field:"technology",mid:"コンピュータ構成要素",sub:"入出力デバイス",a:0,
+ q:"3Dプリンタの方式のうち、光硬化性樹脂にレーザーを照射して一層ずつ硬化させて造形する方式はどれか。",
+ c:["光造形方式","熱溶解積層方式","粉末焼結方式","インクジェット方式"],
+ e:"光造形方式は、液状の光硬化性樹脂に紫外線レーザーなどを照射し、硬化した層を積み重ねて造形します。熱溶解積層方式は樹脂を加熱溶融して押し出します。",
+ pt:"光造形＝液状樹脂を光で硬化"},
+
+{id:"T20",field:"technology",mid:"ソフトウェア",sub:"オペレーティングシステム",a:1,p:1,y:2022,
+ q:"OSの役割として、最も適切なものはどれか。",
+ c:["表計算や文書作成などの業務機能を提供する","ハードウェアを管理し、アプリケーションに共通の機能を提供する","ネットワーク間の通信を中継する","データベースを管理する"],
+ e:"OS（基本ソフトウェア）は、CPUやメモリ、入出力装置などのハードウェア資源を管理し、アプリケーションが動くための共通基盤を提供します。ファイル管理、プロセス管理、メモリ管理、入出力管理などが主な機能です。",
+ pt:"OS＝ハードウェア管理＋アプリへの共通機能提供"},
+
+{id:"T21",field:"technology",mid:"ソフトウェア",sub:"オペレーティングシステム",a:2,
+ q:"実記憶の容量が不足したときに、補助記憶装置の一部を仮想的なメモリとして使う技術はどれか。",
+ c:["キャッシュ","スプーリング","仮想メモリ","ページング"],
+ e:"仮想メモリは、補助記憶装置の一部をメモリとして見せかけ、実記憶より大きなプログラムを実行可能にします。なお、メモリと補助記憶の間でデータを入れ替える具体的な方式がページングです。",
+ pt:"仮想メモリ＝補助記憶をメモリに見せかける"},
+
+{id:"T22",field:"technology",mid:"ソフトウェア",sub:"ファイルシステム",a:0,
+ q:"ファイルの拡張子とその内容の組合せとして、最も適切なものはどれか。",
+ c:[".csv — カンマで区切られた表形式のデータ",".exe — 画像データ",".html — 音声データ",".zip — 動画データ"],
+ e:".csvはテキストの表形式データ、.exeは実行可能プログラム、.htmlはWebページの記述、.zipは圧縮ファイルです。拡張子はファイルの種類を判別する手がかりになります。",
+ pt:"拡張子はファイル種別の目印"},
+
+{id:"T23",field:"technology",mid:"ソフトウェア",sub:"ファイルシステム",a:1,
+ q:"ファイルシステムのうち、フラッシュメモリ向けに設計され、書き換え回数の平準化（ウェアレベリング）を行うものはどれか。",
+ c:["FAT32","exFAT","NTFS","ext4"],
+ e:"exFATはSDカードやUSBメモリなどフラッシュメモリ向けに設計されたファイルシステムで、大容量ファイルを扱えます。ウェアレベリングはフラッシュメモリの特定ブロックへの書き換え集中を避ける制御です。",
+ pt:"exFAT＝フラッシュメモリ向け。4GB超のファイルも扱える"},
+
+{id:"T24",field:"technology",mid:"ソフトウェア",sub:"オープンソースソフトウェア",a:2,
+ q:"オープンソースソフトウェア（OSS）の説明として、最も適切なものはどれか。",
+ c:["無料で利用できるがソースコードは非公開のソフトウェア","商用利用が一切禁止されているソフトウェア","ソースコードが公開され、ライセンス条件の下で自由に利用・改変・再配布できるソフトウェア","特定の企業だけが利用できるソフトウェア"],
+ e:"OSSはソースコードが公開され、ライセンスに従って利用・変更・再配布ができるソフトウェアです。無償とは限らず、サポートが有償の場合もあります。GPLのように派生物の公開を求めるライセンスもあります。",
+ pt:"OSS＝ソース公開＋ライセンスに従い改変・再配布可"},
+
+{id:"T25",field:"technology",mid:"ソフトウェア",sub:"オープンソースソフトウェア",a:3,
+ q:"GPL（GNU General Public License）の特徴として、最も適切なものはどれか。",
+ c:["ソースコードの公開を一切求めない","商用利用を禁止している","改変したソフトウェアの再配布を禁止している","GPLのソフトウェアを組み込んだ派生物もGPLで公開する必要がある"],
+ e:"GPLはコピーレフトの考え方に基づき、GPLソフトウェアを組み込んだ派生物を配布する際には、同じGPL条件でのソース公開を要求します。商用利用は可能です。",
+ pt:"GPL＝コピーレフト。派生物もGPL公開"},
+
+{id:"T26",field:"technology",mid:"ソフトウェア",sub:"オープンソースソフトウェア",a:0,
+ q:"「無保証」であることを条件に、作者が著作権を保持したまま自由な再配布を認める、BSDライセンスの特徴はどれか。",
+ c:["派生物のソース公開を求めない緩やかなライセンスである","派生物のソース公開を必ず求める","特許の利用を一切認めない","商用利用を禁止している"],
+ e:"BSDライセンスはGPLと異なり、派生物のソース公開を求めない「寛容型（パーミッシブ）」ライセンスです。著作権表示を保持すれば、自由に改変・再配布・商用利用できます。",
+ pt:"BSD＝寛容型。ソース公開義務なし（表示は必要）"},
+
+{id:"T27",field:"technology",mid:"ソフトウェア",sub:"ソフトウェア（その他）",a:1,
+ q:"ミドルウェアの説明として、最も適切なものはどれか。",
+ c:["CPUやメモリなどの物理的な装置","OSとアプリケーションの間に位置し、共通機能を提供するソフトウェア","利用者が直接操作する業務アプリケーション","ハードウェアを製造するための設計図"],
+ e:"ミドルウェアは、OSとアプリケーションの中間層で、データベース管理、Webサーバ、通信制御などの共通機能を提供します。アプリケーション開発の効率化と、ハードウェアの差異の吸収を担います。",
+ pt:"ミドルウェア＝OSとアプリの間の共通機能"},
+
+{id:"T28",field:"technology",mid:"ソフトウェア",sub:"ソフトウェア（その他）",a:2,
+ q:"Webブラウザで動作するプログラムのうち、サーバ側で実行されるものはどれか。",
+ c:["JavaScript（クライアント側）","HTML","PHP","CSS"],
+ e:"PHPはサーバ側で実行され、生成したHTMLをクライアントに返すサーバサイドスクリプトです。JavaScriptは主にブラウザ（クライアント）側で動作し、HTML/CSSは文書の構造と見た目を定義するものです。",
+ pt:"サーバサイド＝PHP・Java・Python、クライアント＝JavaScript"},
+
+{id:"T29",field:"technology",mid:"ハードウェア",sub:"ハードウェア",a:1,
+ q:"コンピュータの5大装置に含まれないものはどれか。",
+ c:["制御装置","通信装置","演算装置","記憶装置"],
+ e:"コンピュータの5大装置は、制御装置、演算装置、記憶装置、入力装置、出力装置です。制御装置と演算装置を合わせてCPUと呼びます。通信装置は5大装置には含まれません。",
+ pt:"5大装置＝制御・演算・記憶・入力・出力"},
+
+{id:"T30",field:"technology",mid:"ハードウェア",sub:"ハードウェア",a:0,
+ q:"入力装置に該当するものはどれか。",
+ c:["イメージスキャナ","プリンタ","ディスプレイ","スピーカ"],
+ e:"入力装置はコンピュータにデータを与える装置で、キーボード、マウス、イメージスキャナ、マイクなどがあります。プリンタ、ディスプレイ、スピーカは出力装置です。",
+ pt:"入力＝キーボード・マウス・スキャナ、出力＝プリンタ・画面・音"},
+
+{id:"T31",field:"technology",mid:"ハードウェア",sub:"ハードウェア",a:3,
+ q:"USBの特徴として、最も適切なものはどれか。",
+ c:["一つの装置しか接続できない","電源の供給はできない","差し込む向きが決まっており、逆向きには挿せない","電力供給とデータ通信を1本のケーブルで行える"],
+ e:"USBはデータ通信と電力供給を1本のケーブルで行える汎用インタフェースで、ハブを使って最大127台まで接続できます。Type-Cは向きを気にせず挿せる規格です。",
+ pt:"USB＝データ＋給電を1本で。ホットプラグ対応"},
+
+{id:"T32",field:"technology",mid:"ハードウェア",sub:"ハードウェア",a:2,
+ q:"RAID1の説明として、最も適切なものはどれか。",
+ c:["複数のディスクにデータを分散して高速化する","データとパリティを分散して記録する","2台のディスクに同じデータを書き込み、冗長性を確保する","ディスクを1台だけ使用する"],
+ e:"RAID1（ミラーリング）は、同じデータを2台以上のディスクに二重に書き込む方式で、1台故障してもデータを失わず、読み出しも高速ですが、記憶容量の利用効率は50%になります。RAID0は分散（ストライピング）で冗長性なし、RAID5はパリティ分散です。",
+ pt:"RAID1＝ミラーリング。容量効率50%、冗長性あり"},
+
+{id:"T33",field:"technology",mid:"ハードウェア",sub:"ハードウェア",a:1,
+ q:"組込みシステムの説明として、最も適切なものはどれか。",
+ c:["汎用的なPCとして自由にアプリを追加できる","家電や自動車など特定の機能を実現するために機器に組み込まれたシステム","企業の基幹業務を処理する大型コンピュータ","インターネット上のサービスを提供するサーバ"],
+ e:"組込みシステムは、家電、自動車、産業機械などの製品内部に組み込まれ、その製品に特化した機能を制御するシステムです。リアルタイム性や省電力性、長期の安定動作が重視されます。",
+ pt:"組込み＝機器に内蔵され特定機能を制御"},
+
+{id:"T34",field:"technology",mid:"技術要素",sub:"データベース",a:2,p:1,y:2023,
+ q:"関係データベースにおいて、表の行を一意に識別するためのキーを何というか。",
+ c:["外部キー","複合キー","主キー","候補キー"],
+ e:"主キーは、表の中で行を一意に識別できる列（または列の組合せ）で、NULL値や重複を許しません。他の表の主キーを参照する列は外部キーと呼び、表同士の関連付けに使います。",
+ pt:"主キー＝行の一意識別。NULL・重複不可"},
+
+{id:"T35",field:"technology",mid:"技術要素",sub:"データベース",a:0,
+ q:"SQLのSELECT文に関する説明として、最も適切なものはどれか。",
+ c:["表から条件に合う行を取り出す","表に新しい行を追加する","表の行を削除する","表の構造を変更する"],
+ e:"SELECT文はデータの検索（抽出）に使います。INSERTは追加、UPDATEは更新、DELETEは削除、ALTERは表構造の変更です。SELECTはデータ操作言語（DML）に分類されます。",
+ pt:"SELECT＝検索、INSERT＝追加、UPDATE＝更新、DELETE＝削除"},
+
+{id:"T36",field:"technology",mid:"技術要素",sub:"データベース",a:3,
+ q:"データベースの正規化の目的として、最も適切なものはどれか。",
+ c:["データの検索速度を必ず向上させる","データのバックアップを自動化する","データを暗号化して安全にする","データの重複を排除し、更新時の矛盾（更新異常）を防ぐ"],
+ e:"正規化は、データの重複をなくし、1つの事実を1か所にのみ保持するように表を整理する作業です。これにより更新漏れや矛盾（更新異常）を防ぎます。ただし正規化を進めると表が分割され、検索に結合が必要になり性能が落ちる場合もあります。",
+ pt:"正規化＝重複排除で更新異常を防ぐ"},
+
+{id:"T37",field:"technology",mid:"技術要素",sub:"データベース",a:1,
+ q:"ACID特性のうち、「トランザクションの処理がすべて実行されるか、まったく実行されないかのどちらかである」性質はどれか。",
+ c:["原子性（Atomicity）","一貫性（Consistency）","分離性（Isolation）","永続性（Durability）"],
+ e:"原子性は「all or nothing」の性質で、途中で失敗した場合はロールバックして元の状態に戻します。一貫性は整合性の維持、分離性は同時実行の相互干渉の排除、永続性は完了後の結果が失われないことを表します。",
+ pt:"ACID＝原子性・一貫性・分離性・永続性"},
+
+{id:"T38",field:"technology",mid:"技術要素",sub:"データベース",a:2,
+ q:"データウェアハウスの説明として、最も適切なものはどれか。",
+ c:["日々の業務処理を高速に行うためのデータベース","ネットワーク機器の設定を保存するデータベース","意思決定支援のために、複数の業務データを時系列に蓄積・統合したデータベース","個人情報だけを保管するデータベース"],
+ e:"データウェアハウス（DWH）は、基幹系システムなどからデータを抽出・変換・蓄積し、分析や経営判断に使える形で統合したデータベースです。日々の更新処理に強い通常のDBと対比され、分析用に最適化されています。",
+ pt:"DWH＝分析用に統合・時系列蓄積"},
+
+{id:"T39",field:"technology",mid:"技術要素",sub:"ネットワーク",a:0,
+ q:"TCP/IPの4階層モデルのうち、IPアドレスに基づく経路選択（ルーティング）を行うのはどの層か。",
+ c:["インターネット層","アプリケーション層","トランスポート層","ネットワークインタフェース層"],
+ e:"インターネット層（IP層）は、IPアドレスを使ってパケットの経路を決め、ネットワーク間でデータを届けます。トランスポート層はTCP/UDPで端末間の通信を制御し、アプリケーション層はHTTPやSMTPなどが該当します。",
+ pt:"TCP/IP：アプリ→トランスポート→インターネット→IF"},
+
+{id:"T40",field:"technology",mid:"技術要素",sub:"ネットワーク",a:1,
+ q:"TCPとUDPの違いとして、最も適切なものはどれか。",
+ c:["TCPは速度優先で再送を行わない","TCPは再送や順序制御で信頼性を確保し、UDPは高速だが信頼性を保証しない","UDPは必ずコネクションを確立してから通信する","TCPとUDPは同じプロトコルである"],
+ e:"TCPはコネクションを確立し、確認応答・再送・順序制御によって信頼性の高い通信を実現します。UDPはこれらを行わない代わりに低遅延で、音声・動画のストリーミングやDNSなどに使われます。",
+ pt:"TCP＝信頼性、UDP＝高速・軽量（再送なし）"},
+
+{id:"T41",field:"technology",mid:"技術要素",sub:"ネットワーク",a:2,
+ q:"IPv4のアドレス空間の不足を補うために、1つのグローバルIPアドレスを複数の端末で共有する技術はどれか。",
+ c:["DHCP","DNS","NAPT（IPマスカレード）","VLAN"],
+ e:"NAPT（IPマスカレード）は、プライベートIPアドレスとポート番号を変換し、1つのグローバルIPアドレスで複数端末の通信を実現します。DHCPはIPアドレスの自動割当て、DNSは名前解決、VLANは仮想的なLAN分割です。",
+ pt:"NAPT＝IP＋ポート変換でグローバルIPを共有"},
+
+{id:"T42",field:"technology",mid:"技術要素",sub:"ネットワーク",a:0,
+ q:"IPアドレス 192.168.1.10、サブネットマスク 255.255.255.0 のとき、このアドレスが属するネットワークアドレスはどれか。",
+ c:["192.168.1.0","192.168.0.0","192.168.1.255","192.168.255.0"],
+ e:"サブネットマスク255.255.255.0は上位24ビットをネットワーク部とするため、下位8ビットを0にした192.168.1.0がネットワークアドレスです。192.168.1.255はブロードキャストアドレスになります。",
+ pt:"ネットワークアドレス＝IPのホスト部を0にする"},
+
+{id:"T43",field:"technology",mid:"技術要素",sub:"ネットワーク",a:1,
+ q:"無線LANの規格のうち、5GHz帯を使い高速通信が可能なものはどれか。",
+ c:["IEEE802.3","IEEE802.11ac","IEEE802.15.1","IEEE802.16"],
+ e:"IEEE802.11ac（および11ax/11n）は無線LAN（Wi-Fi）の規格で、5GHz帯を使用します。IEEE802.3は有線LAN（Ethernet）、802.15.1はBluetooth、802.16はWiMAXです。",
+ pt:"802.11＝無線LAN、802.3＝有線LAN"},
+
+{id:"T44",field:"technology",mid:"技術要素",sub:"ネットワーク",a:2,
+ q:"DNSの役割として、最も適切なものはどれか。",
+ c:["メールの送受信を行う","Webページの内容を暗号化する","ドメイン名とIPアドレスを対応付ける","ネットワーク機器にIPアドレスを自動配布する"],
+ e:"DNS（Domain Name System）は、www.example.comのようなドメイン名をIPアドレスに変換する（名前解決）仕組みです。3はDHCPの役割です。",
+ pt:"DNS＝ドメイン名⇔IPアドレスの名前解決"},
+
+{id:"T45",field:"technology",mid:"技術要素",sub:"セキュリティ",a:1,p:1,y:2024,
+ q:"公開鍵暗号方式の説明として、最も適切なものはどれか。",
+ c:["暗号化と復号に同じ鍵を使う","暗号化には受信者の公開鍵、復号には受信者の秘密鍵を使う","暗号化には送信者の秘密鍵、復号には送信者の公開鍵を使う","鍵を一切使わずに暗号化する"],
+ e:"公開鍵暗号方式は、公開鍵で暗号化し、対になる秘密鍵で復号します。鍵の配送が不要という利点がある一方、処理速度が遅いため、共通鍵の配送（ハイブリッド暗号）に使われます。3はデジタル署名の仕組みです。",
+ pt:"公開鍵で暗号化→秘密鍵で復号。署名はその逆"},
+
+{id:"T46",field:"technology",mid:"技術要素",sub:"セキュリティ",a:3,
+ q:"デジタル署名の目的として、最も適切なものはどれか。",
+ c:["データを圧縮して容量を小さくする","データの内容を第三者に公開する","通信速度を向上させる","データの改ざんの検知と、作成者のなりすましの防止"],
+ e:"デジタル署名は、送信者の秘密鍵でデータのハッシュ値を暗号化して添付します。受信者は送信者の公開鍵で検証し、改ざんがないこと（完全性）と、確かに本人が作成したこと（真正性・否認防止）を確認できます。",
+ pt:"デジタル署名＝完全性＋真正性＋否認防止"},
+
+{id:"T47",field:"technology",mid:"技術要素",sub:"セキュリティ",a:0,
+ q:"SQLインジェクション攻撃の説明として、最も適切なものはどれか。",
+ c:["入力フォームに不正なSQL文を埋め込み、データベースを不正に操作する","大量の通信でサービスを停止させる","パスワードを総当たりで試行する","Webサイトの閲覧者に偽の画面を表示させる"],
+ e:"SQLインジェクションは、アプリケーションが入力をそのままSQL文に組み込んでいる隙を突き、DBの不正操作や情報漏えいを引き起こす攻撃です。対策はプレースホルダ（バインド機構）の使用と入力値の検証です。",
+ pt:"SQLインジェクション対策＝プレースホルダ＋入力検証"},
+
+{id:"T48",field:"technology",mid:"技術要素",sub:"セキュリティ",a:2,
+ q:"クロスサイトスクリプティング（XSS）の説明として、最も適切なものはどれか。",
+ c:["サーバに大量のリクエストを送りサービスを妨害する","通信を盗聴してパスワードを取得する","Webページに悪意のあるスクリプトを埋め込み、閲覧者のブラウザで実行させる","データベースの内容を書き換える"],
+ e:"XSSは、掲示板やSNSなどの入力欄に悪意あるスクリプトを仕込み、それを閲覧した利用者のブラウザ上で実行させる攻撃です。Cookieの窃取や偽画面の表示に悪用されます。対策は出力時のエスケープ処理です。",
+ pt:"XSS＝スクリプト埋込み。対策は出力エスケープ"},
+
+{id:"T49",field:"technology",mid:"技術要素",sub:"セキュリティ",a:1,
+ q:"ブルートフォース攻撃の説明として、最も適切なものはどれか。",
+ c:["辞書にある単語を組み合わせてパスワードを推測する","考えられるすべての文字の組合せを総当たりで試す","通信内容を傍受して解析する","ウイルスに感染させて情報を送信させる"],
+ e:"ブルートフォース（総当たり）攻撃は、パスワードの全パターンを機械的に試行します。1は辞書攻撃、3は盗聴（スニッフィング）です。対策はパスワードの長文化と、一定回数失敗でのアカウントロックです。",
+ pt:"ブルートフォース＝総当たり、辞書攻撃＝辞書の単語"},
+
+{id:"T50",field:"technology",mid:"技術要素",sub:"セキュリティ",a:2,
+ q:"ランサムウェアの説明として、最も適切なものはどれか。",
+ c:["感染しても表示が変わるだけで実害はない","自己増殖してネットワークを輻輳させる","ファイルを暗号化して使用不能にし、復号のための身代金を要求する","キー入力を記録してパスワードを窃取する"],
+ e:"ランサムウェアは、端末のファイルを暗号化するなどして利用できなくし、元に戻すことと引き換えに金銭を要求するマルウェアです。対策はバックアップの確保、OS・ソフトの更新、添付ファイルの警戒です。",
+ pt:"ランサムウェア＝暗号化＋身代金要求。対策はバックアップ"},
+
+{id:"T51",field:"technology",mid:"技術要素",sub:"セキュリティ",a:0,
+ q:"多要素認証の説明として、最も適切なものはどれか。",
+ c:["知識・所持・生体のうち、異なる2つ以上の要素を組み合わせて本人確認する","同じパスワードを2回入力させる","パスワードを2つ設定する","2台の端末から同時にログインできるようにする"],
+ e:"多要素認証は「知っているもの（パスワード）」「持っているもの（ICカード・スマホ）」「本人の特徴（指紋・顔）」という性質の異なる要素を2つ以上組み合わせます。同じ要素を2つ重ねても多要素にはなりません。",
+ pt:"多要素＝知識・所持・生体のうち異なる2つ以上"},
+
+{id:"T52",field:"technology",mid:"技術要素",sub:"セキュリティ",a:1,
+ q:"ファイアウォールの説明として、最も適切なものはどれか。",
+ c:["データを暗号化して保存する","通過する通信を検査し、許可されていない通信を遮断する","ウイルス定義ファイルを更新する","アクセスログを暗号化する"],
+ e:"ファイアウォールは、ネットワークの境界でパケットの送信元・宛先・ポート番号などを見て、許可された通信だけを通す仕組みです。内部ネットワークを外部の不正アクセスから守ります。",
+ pt:"ファイアウォール＝境界で通信を許可制御"},
+
+{id:"T53",field:"technology",mid:"技術要素",sub:"セキュリティ",a:3,
+ q:"WAF（Web Application Firewall）の説明として、最も適切なものはどれか。",
+ c:["社内LANのIPアドレスを自動割当する","無線LANの電波を暗号化する","メールの添付ファイルを検査する","Webアプリケーションへの攻撃を検知・遮断する"],
+ e:"WAFは、HTTP/HTTPSの通信内容を検査し、SQLインジェクションやXSSなどWebアプリ特有の攻撃を検知・遮断します。ファイアウォールがIP・ポート単位なのに対し、WAFはアプリケーション層の内容を見る点が異なります。",
+ pt:"WAF＝Webアプリ層の攻撃対策"},
+
+{id:"T54",field:"technology",mid:"技術要素",sub:"セキュリティ",a:2,
+ q:"セキュリティバイデザインの考え方として、最も適切なものはどれか。",
+ c:["システム完成後にセキュリティ診断を行う","事故が起きてから対策を検討する","企画・設計の初期段階からセキュリティを組み込む","セキュリティ対策は運用部門だけが担当する"],
+ e:"セキュリティバイデザインは、システムの企画・設計段階からセキュリティを考慮して作り込む考え方です。後から対策を追加するより低コストで、脆弱性の作り込みを防げます。",
+ pt:"セキュリティバイデザイン＝設計段階から対策を内蔵"},
+
+{id:"T55",field:"technology",mid:"技術要素",sub:"セキュリティ",a:1,
+ q:"共通鍵暗号方式の特徴として、最も適切なものはどれか。",
+ c:["鍵の配送が不要である","暗号化と復号に同じ鍵を使うため、処理が高速である","公開鍵より鍵管理が容易である","必ずデジタル署名と組み合わせて使う"],
+ e:"共通鍵暗号方式は、送信者と受信者が同じ鍵を共有し、処理が高速という利点があります。一方で、安全に鍵を配送する方法が課題となり、この課題を解決するために公開鍵暗号と組み合わせたハイブリッド方式が使われます。",
+ pt:"共通鍵＝高速だが鍵配送が課題"},
+
+{id:"T56",field:"technology",mid:"開発技術",sub:"開発技術（その他）",a:2,
+ q:"APIの説明として、最も適切なものはどれか。",
+ c:["アプリケーションの画面デザインを定義したもの","データベースの表構造を定義したもの","ソフトウェア同士が機能を呼び出し合うためのインタフェース","プログラムの実行速度を測定する指標"],
+ e:"API（Application Programming Interface）は、あるソフトウェアの機能を別のプログラムから利用するための手順や仕様です。Web APIではHTTPを通じてデータをやり取りし、サービス連携に広く使われます。",
+ pt:"API＝ソフトウェア間の機能呼び出しの窓口"},
+
+{id:"T57",field:"technology",mid:"開発技術",sub:"開発技術（その他）",a:0,
+ q:"OSSを利用する際のライセンス管理として、最も適切なものはどれか。",
+ c:["利用するOSSのライセンス条件を確認し、ソース公開義務などの遵守事項を管理する","OSSはすべて自由に使えるため、ライセンス確認は不要である","OSSの利用は社内開発に限る","OSSの著作権表示は削除してよい"],
+ e:"OSSはライセンスごとに条件が異なり、GPLのように派生物のソース公開を求めるものもあります。利用前にライセンスを確認し、義務の履行とライセンス一覧の管理（SBOMなど）が求められます。",
+ pt:"OSSはライセンス確認が必須。GPLはコピーレフトに注意"}
+];
+
+/* =========================================================================
+   用語カード — 暗記用フラッシュカード
+   ========================================================================= */
+window.TERMS = [
+/* --- ストラテジ系 --- */
+{id:"K01",field:"strategy",sub:"経営組織",term:"事業部制組織",def:"製品・市場・地域などの単位で事業部を分け、各事業部に広い権限と利益責任を委譲する組織形態。",key:"権限委譲＋利益責任で意思決定が速い"},
+{id:"K02",field:"strategy",sub:"経営組織",term:"カンパニー制",def:"社内を疑似独立企業のように分け、損益だけでなく資本効率（ROI）まで責任を負わせる制度。",key:"事業部制との違いは「資本効率」への責任"},
+{id:"K03",field:"strategy",sub:"経営組織",term:"マトリックス組織",def:"職能別（縦）と製品・プロジェクト別（横）の命令系統を組み合わせた組織。",key:"二重の命令系統。専門性と目的達成の両立"},
+{id:"K04",field:"strategy",sub:"会計・財務",term:"損益分岐点売上高",def:"利益がゼロになる売上高。固定費 ÷（1 − 変動費率）で求める。",key:"固定費 ÷ 限界利益率"},
+{id:"K05",field:"strategy",sub:"会計・財務",term:"ROE / ROA",def:"ROEは当期純利益÷自己資本（株主視点）、ROAは当期純利益÷総資産（全資産の効率）。",key:"ROE＝自己資本、ROA＝総資産"},
+{id:"K06",field:"strategy",sub:"会計・財務",term:"減価償却（定額法）",def:"取得価額から残存価額を引いた額を、耐用年数で均等に費用化する方法。",key:"(取得価額−残存価額)÷耐用年数"},
+{id:"K07",field:"strategy",sub:"会計・財務",term:"貸借対照表（B/S）",def:"ある時点の財政状態を「資産＝負債＋純資産」で示す財務諸表。",key:"B/Sは「ある時点」、P/Lは「一定期間」"},
+{id:"K08",field:"strategy",sub:"法務",term:"不正アクセス禁止法",def:"他人のID・パスワードを無断使用したログインや、識別符号の不正取得・提供を禁止する法律。",key:"なりすましログイン＋ID不正取得"},
+{id:"K09",field:"strategy",sub:"法務",term:"要配慮個人情報",def:"人種・信条・社会的身分・病歴・犯罪歴など、差別や偏見が生じないよう配慮を要する個人情報。",key:"取得には原則として本人の同意が必要"},
+{id:"K10",field:"strategy",sub:"法務",term:"著作権の保護対象",def:"プログラムも著作物として保護される。保護されるのは「表現」で、アイデアは対象外。期間は死後70年。",key:"プログラムも著作物。アイデアは保護されない"},
+{id:"K11",field:"strategy",sub:"法務",term:"労働者派遣",def:"雇用主は派遣元、指揮命令権者は派遣先という二重の関係になる働き方。",key:"雇用＝派遣元、指揮命令＝派遣先"},
+{id:"K12",field:"strategy",sub:"経営戦略手法",term:"SWOT分析",def:"強み・弱み（内部環境）と機会・脅威（外部環境）を組み合わせて戦略を導く手法。",key:"内部S・W × 外部O・T"},
+{id:"K13",field:"strategy",sub:"経営戦略手法",term:"3C分析",def:"Customer（顧客・市場）、Competitor（競合）、Company（自社）の3視点で市場を分析。",key:"顧客・競合・自社"},
+{id:"K14",field:"strategy",sub:"経営戦略手法",term:"PPM",def:"縦軸に市場成長率、横軸に市場占有率をとり、事業を花形・金のなる木・問題児・負け犬に分類。",key:"高成長高シェア＝花形、低成長高シェア＝金のなる木"},
+{id:"K15",field:"strategy",sub:"経営戦略手法",term:"ファイブフォース分析",def:"新規参入・代替品・売り手・買い手・業者間競争の5要因で業界の魅力度を分析。",key:"5つの力で業界構造を見る"},
+{id:"K16",field:"strategy",sub:"経営戦略手法",term:"バリューチェーン",def:"業務を主活動と支援活動に分解し、付加価値がどこで生まれているかを分析する手法。",key:"主活動＋支援活動の連鎖"},
+{id:"K17",field:"strategy",sub:"経営戦略手法",term:"アンゾフの成長マトリクス",def:"製品（既存・新規）×市場（既存・新規）で市場浸透・製品開発・市場開拓・多角化に分類。",key:"両方新規＝多角化"},
+{id:"K18",field:"strategy",sub:"マーケティング",term:"4P",def:"Product（製品）、Price（価格）、Place（流通）、Promotion（販促）のマーケティングミックス。",key:"4Pを顧客視点にすると4C"},
+{id:"K19",field:"strategy",sub:"マーケティング",term:"RFM分析",def:"最終購買日（Recency）・購買頻度（Frequency）・購買金額（Monetary）で顧客を分類。",key:"最新性・頻度・金額"},
+{id:"K20",field:"strategy",sub:"マーケティング",term:"カスタマージャーニーマップ",def:"認知から購買、購入後までの顧客体験を時系列で可視化した図。",key:"顧客体験を時間軸で描く"},
+{id:"K21",field:"strategy",sub:"ビジネスシステム",term:"ERP",def:"会計・販売・購買・生産・在庫・人事などの基幹業務を一元管理し、全社最適を図るシステム。",key:"部分最適→全体最適"},
+{id:"K22",field:"strategy",sub:"ビジネスシステム",term:"CRM / SFA",def:"CRMは顧客情報を一元管理して関係を強化。SFAは営業活動（商談・案件）を支援。",key:"CRM＝顧客、SFA＝営業"},
+{id:"K23",field:"strategy",sub:"ビジネスシステム",term:"SCM",def:"調達・生産・在庫・物流・販売をまたぐ供給の流れ全体を最適化する考え方。",key:"サプライチェーン全体の最適化"},
+{id:"K24",field:"strategy",sub:"ビジネスシステム",term:"POSシステム",def:"販売時点で商品・数量・時刻などの情報を収集し、在庫管理や発注に活用する仕組み。",key:"いつ・何が・いくつ売れたか"},
+{id:"K25",field:"strategy",sub:"e-ビジネス",term:"ロングテール",def:"販売数の少ない多数の商品を豊富に揃え、合計で大きな売上を得る戦略。",key:"少数×多数の合算"},
+{id:"K26",field:"strategy",sub:"e-ビジネス",term:"O2O",def:"オンラインの情報発信を起点に、実店舗への来店・購買を促す取組み。",key:"Online to Offline"},
+{id:"K27",field:"strategy",sub:"技術開発戦略",term:"オープンイノベーション",def:"自前主義を脱し、外部の大学・企業・スタートアップの知識や技術を組み合わせて革新を起こす手法。",key:"外部知の活用"},
+{id:"K28",field:"strategy",sub:"技術開発戦略",term:"技術ロードマップ",def:"技術の進展と製品・市場の投入計画を時間軸に沿って対応付けた計画図。",key:"技術×製品×市場×時間"},
+{id:"K29",field:"strategy",sub:"業務分析",term:"特性要因図",def:"結果（特性）とその原因（要因）の関係を魚の骨状に整理する図。",key:"フィッシュボーン図"},
+{id:"K30",field:"strategy",sub:"業務分析",term:"アソシエーション分析",def:"購買履歴から「同時に買われる商品の組合せ」をルールとして抽出する分析手法。",key:"バスケット分析とも呼ぶ"},
+{id:"K31",field:"strategy",sub:"業務分析",term:"ブレーンストーミング4原則",def:"批判厳禁・自由奔放・量産歓迎・結合改善。",key:"質より量、批判しない"},
+
+/* --- マネジメント系 --- */
+{id:"K32",field:"management",sub:"情報システム戦略",term:"EA（エンタープライズアーキテクチャ）",def:"業務・データ・アプリケーション・技術基盤の4層を全体最適で整理し、標準化と再利用を進める手法。",key:"4層を全体最適で整理"},
+{id:"K33",field:"management",sub:"情報システム戦略",term:"SOA",def:"業務機能を疎結合な「サービス」として構築し、組み合わせてシステムを構成する設計思想。",key:"サービスの組合せで柔軟に"},
+{id:"K34",field:"management",sub:"情報システム戦略",term:"BPR",def:"業務プロセスを根本から見直し、抜本的に再設計すること。",key:"「改善」ではなく「再設計」"},
+{id:"K35",field:"management",sub:"情報システム戦略",term:"BYOD",def:"従業員が個人所有の端末を業務に利用する形態。MDMや利用ルールで統制する。",key:"私物端末の業務利用"},
+{id:"K36",field:"management",sub:"ソリューション",term:"SaaS / PaaS / IaaS",def:"SaaSは完成アプリ、PaaSはアプリ実行環境、IaaSはインフラをクラウドで提供する形態。",key:"提供範囲の広い順にIaaS→PaaS→SaaS"},
+{id:"K37",field:"management",sub:"システム評価",term:"TCO",def:"導入から運用・保守・廃棄までに要する総所有コスト。",key:"初期費用だけで比べない"},
+{id:"K38",field:"management",sub:"システム評価",term:"NPV（正味現在価値）",def:"将来のキャッシュフローを割引率で現在価値に換算し、初期投資を差し引いた値。",key:"正なら投資価値あり"},
+{id:"K39",field:"management",sub:"開発プロセス",term:"ウォーターフォールモデル",def:"要件定義からテストまでを順番に進める開発モデル。変更に弱く手戻りコストが大きい。",key:"一方向・変更に弱い"},
+{id:"K40",field:"management",sub:"開発プロセス",term:"アジャイル開発",def:"短い反復（イテレーション）で動くソフトウェアを提供し、変化に適応する開発手法。",key:"反復＋フィードバック"},
+{id:"K41",field:"management",sub:"開発プロセス",term:"スクラム",def:"スプリントと呼ばれる短期間の反復で開発を進めるアジャイルのフレームワーク。",key:"レビュー＝成果披露、レトロ＝振り返り"},
+{id:"K42",field:"management",sub:"開発プロセス",term:"非機能要件",def:"性能・可用性・セキュリティ・運用性・移行性など、機能以外の品質や制約に関する要件。",key:"応答時間・稼働率は非機能要件"},
+{id:"K43",field:"management",sub:"プロジェクト",term:"WBS",def:"成果物や作業を管理可能な大きさまで階層的に分解したもの。",key:"作業漏れ防止と見積りの基礎"},
+{id:"K44",field:"management",sub:"プロジェクト",term:"クリティカルパス",def:"アローダイアグラムの経路のうち所要時間が最長で、全体の所要日数を決める経路。",key:"最長経路＝全体の日数"},
+{id:"K45",field:"management",sub:"プロジェクト",term:"EVM",def:"出来高（EV）・予定価値（PV）・実コスト（AC）でコストと進捗を統合管理する手法。",key:"CV=EV−AC、SV=EV−PV"},
+{id:"K46",field:"management",sub:"テスト",term:"ホワイトボックス／ブラックボックステスト",def:"ホワイトボックスは内部ロジックに着目、ブラックボックスは入出力（仕様）に着目したテスト。",key:"内部を見る／見ない"},
+{id:"K47",field:"management",sub:"テスト",term:"リグレッションテスト",def:"修正によって既存機能に影響が出ていないことを確認する回帰テスト。",key:"修正したら回帰テスト"},
+{id:"K48",field:"management",sub:"サービスマネジメント",term:"インシデント管理",def:"サービスの中断をできるだけ早く復旧させ、業務への影響を最小化するプロセス。",key:"早期復旧（原因追及は問題管理）"},
+{id:"K49",field:"management",sub:"サービスマネジメント",term:"問題管理",def:"インシデントの根本原因を追究し、再発を防止するプロセス。",key:"根本原因の除去＝再発防止"},
+{id:"K50",field:"management",sub:"サービスマネジメント",term:"SLA",def:"サービス提供者と利用者の間で合意する、サービスの品質水準と責任範囲。",key:"品質水準の合意文書"},
+{id:"K51",field:"management",sub:"サービスマネジメント",term:"バックアップ方式",def:"フルは全体、差分は前回フル以降の変更分、増分は前回バックアップ以降の変更分を取得。",key:"フル→差分→増分の順に復旧が複雑"},
+{id:"K52",field:"management",sub:"システム監査",term:"システム監査人",def:"監査対象から独立した立場で、情報システムの管理状況を検証・評価し、改善を勧告する役割。",key:"独立性が最重要"},
+{id:"K53",field:"management",sub:"システム監査",term:"監査証拠",def:"監査意見を裏付けるために収集する記録・資料・事実。十分性と適切性が求められる。",key:"意見の裏付け"},
+{id:"K54",field:"management",sub:"システム監査",term:"監査の流れ",def:"監査計画 → 予備調査 → 本調査 → 監査報告 → フォローアップ。",key:"計画→予備→本調査→報告→改善確認"},
+{id:"K55",field:"management",sub:"システム監査",term:"協調型監査",def:"被監査部門と協力しながら改善につなげることを重視する監査の考え方。",key:"指摘より改善"},
+
+/* --- テクノロジ系 --- */
+{id:"K56",field:"technology",sub:"基礎理論",term:"2進数→10進数",def:"各桁に2の累乗の重みを掛けて合計する。1011(2)=8+0+2+1=11。",key:"8・4・2・1の重み"},
+{id:"K57",field:"technology",sub:"基礎理論",term:"ハフマン符号化",def:"出現頻度の高い文字に短い符号を割り当てる可逆圧縮方式。",key:"頻度に応じた可変長符号"},
+{id:"K58",field:"technology",sub:"基礎理論",term:"計算量オーダー",def:"処理時間の増え方の目安。小さい順にO(1)＜O(log n)＜O(n)＜O(n log n)＜O(n²)＜O(2ⁿ)。",key:"2分探索はO(log n)、バブルソートはO(n²)"},
+{id:"K59",field:"technology",sub:"基礎理論",term:"スタック / キュー",def:"スタックはLIFO（後入れ先出し）、キューはFIFO（先入れ先出し）のデータ構造。",key:"LIFOとFIFO"},
+{id:"K60",field:"technology",sub:"コンピュータ",term:"クロック周波数",def:"1秒間に発生するクロックパルスの回数。Hzで表し、CPUの処理タイミングの基準。",key:"1秒あたりのパルス数"},
+{id:"K61",field:"technology",sub:"コンピュータ",term:"キャッシュメモリ",def:"CPUと主記憶の速度差を埋める高速・小容量のメモリ。よく使うデータを保持する。",key:"速度差の緩衝材"},
+{id:"K62",field:"technology",sub:"コンピュータ",term:"DRAM / SRAM",def:"SRAMは高速・高価・リフレッシュ不要、DRAMは安価・高集積・リフレッシュ必要。どちらも揮発性。",key:"キャッシュはSRAM、主記憶はDRAM"},
+{id:"K63",field:"technology",sub:"コンピュータ",term:"パイプライン処理",def:"1命令の処理を複数段階に分け、異なる命令の各段階を並行実行して処理量を上げる方式。",key:"分岐で乱れる（分岐ハザード）"},
+{id:"K64",field:"technology",sub:"コンピュータ",term:"RAID1 / RAID5",def:"RAID1はミラーリング（容量効率50%）、RAID5はパリティ分散で1台故障まで耐える。",key:"RAID0は冗長性なし"},
+{id:"K65",field:"technology",sub:"ソフトウェア",term:"仮想メモリ",def:"補助記憶装置の一部をメモリに見せかけ、実記憶より大きなプログラムを動かす技術。",key:"ページングで入れ替え"},
+{id:"K66",field:"technology",sub:"ソフトウェア",term:"OSS",def:"ソースコードが公開され、ライセンス条件の下で利用・改変・再配布できるソフトウェア。",key:"無償とは限らない。ライセンス確認必須"},
+{id:"K67",field:"technology",sub:"ソフトウェア",term:"GPL / BSD",def:"GPLは派生物もGPL公開が必要（コピーレフト）、BSDはソース公開義務なしの寛容型。",key:"GPLは感染する、BSDはしない"},
+{id:"K68",field:"technology",sub:"ソフトウェア",term:"ミドルウェア",def:"OSとアプリケーションの間に位置し、DB管理やWebサーバなどの共通機能を提供するソフトウェア。",key:"OSとアプリの中間層"},
+{id:"K69",field:"technology",sub:"データベース",term:"主キー / 外部キー",def:"主キーは行を一意に識別する列（NULL・重複不可）、外部キーは他表の主キーを参照する列。",key:"主キーで識別、外部キーで関連付け"},
+{id:"K70",field:"technology",sub:"データベース",term:"正規化",def:"データの重複を排除し、更新異常を防ぐために表を整理すること。",key:"重複排除で更新異常を防ぐ"},
+{id:"K71",field:"technology",sub:"データベース",term:"ACID特性",def:"原子性・一貫性・分離性・永続性。トランザクションが満たすべき4つの性質。",key:"All or Nothing が原子性"},
+{id:"K72",field:"technology",sub:"データベース",term:"データウェアハウス",def:"意思決定支援のため、複数の業務データを統合・時系列に蓄積した分析用データベース。",key:"分析用に統合・蓄積"},
+{id:"K73",field:"technology",sub:"ネットワーク",term:"TCP/IPの4階層",def:"アプリケーション層・トランスポート層・インターネット層・ネットワークインタフェース層。",key:"IPはインターネット層"},
+{id:"K74",field:"technology",sub:"ネットワーク",term:"TCP / UDP",def:"TCPは再送・順序制御で信頼性を確保。UDPは低遅延だが信頼性を保証しない。",key:"TCP＝信頼、UDP＝速度"},
+{id:"K75",field:"technology",sub:"ネットワーク",term:"DNS / DHCP",def:"DNSはドメイン名とIPアドレスを対応付ける（名前解決）。DHCPはIPアドレスを自動割当。",key:"DNS＝名前解決、DHCP＝自動割当"},
+{id:"K76",field:"technology",sub:"ネットワーク",term:"NAPT（IPマスカレード）",def:"IPアドレスとポート番号を変換し、1つのグローバルIPを複数端末で共有する技術。",key:"IP＋ポートの変換"},
+{id:"K77",field:"technology",sub:"ネットワーク",term:"サブネットマスク",def:"IPアドレスのうち、ネットワーク部とホスト部の境界を示す値。255.255.255.0なら上位24ビットがネットワーク部。",key:"ホスト部を0にするとネットワークアドレス"},
+{id:"K78",field:"technology",sub:"セキュリティ",term:"公開鍵暗号方式",def:"公開鍵で暗号化し、対になる秘密鍵で復号する方式。鍵の配送が不要だが処理は遅い。",key:"公開で暗号化、秘密で復号"},
+{id:"K79",field:"technology",sub:"セキュリティ",term:"デジタル署名",def:"送信者の秘密鍵でハッシュ値を暗号化して添付。改ざん検知となりすまし防止、否認防止を実現。",key:"秘密鍵で署名、公開鍵で検証"},
+{id:"K80",field:"technology",sub:"セキュリティ",term:"SQLインジェクション",def:"入力フォームに不正なSQL文を埋め込み、DBを不正操作する攻撃。",key:"対策はプレースホルダ＋入力検証"},
+{id:"K81",field:"technology",sub:"セキュリティ",term:"クロスサイトスクリプティング",def:"Webページに悪意あるスクリプトを埋め込み、閲覧者のブラウザで実行させる攻撃。",key:"対策は出力時のエスケープ"},
+{id:"K82",field:"technology",sub:"セキュリティ",term:"ランサムウェア",def:"ファイルを暗号化して使用不能にし、復号の身代金を要求するマルウェア。",key:"対策はバックアップと更新"},
+{id:"K83",field:"technology",sub:"セキュリティ",term:"多要素認証",def:"知識・所持・生体のうち、性質の異なる2つ以上を組み合わせた本人確認。",key:"同じ要素を2つでは多要素にならない"},
+{id:"K84",field:"technology",sub:"セキュリティ",term:"WAF",def:"HTTP/HTTPSの内容を検査し、SQLインジェクションやXSSなどWebアプリへの攻撃を遮断する。",key:"アプリ層の防御。FWはIP・ポート単位"},
+{id:"K85",field:"technology",sub:"セキュリティ",term:"セキュリティバイデザイン",def:"企画・設計の初期段階からセキュリティを組み込む考え方。",key:"後付けより低コスト"},
+{id:"K86",field:"technology",sub:"開発技術",term:"API",def:"ソフトウェア同士が機能を呼び出し合うためのインタフェース（手順・仕様）。",key:"機能呼び出しの窓口"}
+];
+
+/* =========================================================================
+   ITパスポート 学習ノート — アプリコア
+   ========================================================================= */
+"use strict";
+
+const KEY = "itp_notebook_v1";
+const FIELDS = {
+  strategy:   {name:"ストラテジ系", short:"ストラテジ", cls:"strategy",   desc:"経営・法務・システム戦略"},
+  management: {name:"マネジメント系", short:"マネジメント", cls:"management", desc:"開発・プロジェクト・監査"},
+  technology: {name:"テクノロジ系", short:"テクノロジ", cls:"technology", desc:"基礎理論・NW・セキュリティ"}
+};
+const FIELD_KEYS = ["strategy","management","technology"];
+const WD = ["日","月","火","水","木","金","土"];
+
+const DEFAULT_STATE = {
+  v:1,
+  settings:{
+    examDate:"2026-11-12",
+    weekdays:[2,4,6,0],      // 火・木・土・日
+    minutesPerDay:60,
+    targetRate:70,
+    preferPast:true
+  },
+  history:[],
+  roadmap:{},
+  custom:[],
+  edits:{},
+  hidden:[],
+  cardWeak:{},
+  session:null,
+  streak:{last:null, days:0},
+  createdAt:null
+};
+
+/* ---------------- ユーティリティ ---------------- */
+const $ = (s,r=document)=>r.querySelector(s);
+const $$ = (s,r=document)=>Array.from(r.querySelectorAll(s));
+const esc = s => String(s==null?"":s).replace(/[&<>"']/g, m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+const pad2 = n=>String(n).padStart(2,"0");
+const dayKey = d => `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
+const startOfDay = d => new Date(d.getFullYear(),d.getMonth(),d.getDate());
+const parseDay = s => { if(!s) return null; const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(s); if(!m) return null; const d=new Date(+m[1],+m[2]-1,+m[3]); return isNaN(d)?null:d; };
+const addDays = (d,n)=>{ const x=new Date(d.getTime()); x.setDate(x.getDate()+n); return startOfDay(x); };
+const today = ()=>startOfDay(new Date());
+const diffDays = (a,b)=>Math.round((startOfDay(b)-startOfDay(a))/86400000);
+const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
+const pct = (a,b)=> b>0 ? Math.round(a/b*100) : 0;
+const fmtTime = sec => `${pad2(Math.floor(sec/60))}:${pad2(Math.floor(sec%60))}`;
+const shuffle = arr => { const a=arr.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+const uid = p => `${p}${Date.now().toString(36)}${Math.random().toString(36).slice(2,6)}`;
+const jpDate = d => `${d.getMonth()+1}/${d.getDate()}(${WD[d.getDay()]})`;
+
+/* ---------------- 状態 ---------------- */
+let ST = null;
+
+function deepFill(def, src){
+  if(Array.isArray(def)) return Array.isArray(src)?src:def.slice();
+  if(def && typeof def==="object"){
+    const o={};
+    Object.keys(def).forEach(k=>{ o[k] = (src && typeof src==="object" && k in src) ? deepFill(def[k], src[k]) : (Array.isArray(def[k])?def[k].slice():(def[k]&&typeof def[k]==="object"?deepFill(def[k],{}):def[k])); });
+    if(src && typeof src==="object") Object.keys(src).forEach(k=>{ if(!(k in o)) o[k]=src[k]; });
+    return o;
+  }
+  return src===undefined?def:src;
+}
+function loadState(){
+  let raw=null;
+  try{ raw = localStorage.getItem(KEY); }catch(e){ console.warn("localStorage利用不可",e); }
+  if(!raw){ ST = deepFill(DEFAULT_STATE,{}); ST.createdAt = Date.now(); return; }
+  try{
+    const p = JSON.parse(raw);
+    ST = deepFill(DEFAULT_STATE, p);
+  }catch(e){ console.warn("保存データが壊れていたため初期化します", e); ST = deepFill(DEFAULT_STATE,{}); }
+  if(!ST.createdAt) ST.createdAt = Date.now();
+}
+let saveTimer=null;
+function save(now){
+  if(saveTimer){ clearTimeout(saveTimer); saveTimer=null; }
+  const doSave=()=>{ try{ localStorage.setItem(KEY, JSON.stringify(ST)); }catch(e){ console.warn("保存に失敗",e); toast("保存に失敗しました（容量不足の可能性）"); } };
+  if(now) doSave(); else saveTimer=setTimeout(doSave,250);
+}
+
+/* ---------------- 問題バンク ---------------- */
+function baseQuestions(){
+  return [].concat(window.Q_STRATEGY||[], window.Q_MANAGEMENT||[], window.Q_TECHNOLOGY||[]);
+}
+function allQuestions(){
+  const hidden = new Set(ST.hidden||[]);
+  const out = [];
+  baseQuestions().forEach(q=>{
+    if(hidden.has(q.id)) return;
+    const ed = ST.edits[q.id];
+    out.push(ed ? Object.assign({}, q, ed, {id:q.id, field:ed.field||q.field, mid:ed.mid||q.mid, sub:ed.sub||q.sub, _edited:true}) : q);
+  });
+  (ST.custom||[]).forEach(q=>{ if(!hidden.has(q.id)) out.push(q); });
+  return out;
+}
+function qById(id){ return allQuestions().find(q=>q.id===id) || baseQuestions().find(q=>q.id===id) || null; }
+function fieldOf(q){ return FIELDS[q.field]?q.field:"technology"; }
+function labelOf(q){ return `${FIELDS[fieldOf(q)].short} / ${q.mid||"-"} / ${q.sub||"-"}`; }
+
+/* ---------------- 集計 ---------------- */
+function allAttempts(){
+  const arr=[];
+  (ST.history||[]).forEach(h=>{ (h.answers||[]).forEach(a=>{ arr.push(Object.assign({ts:h.ts, mode:h.mode}, a)); }); });
+  return arr;
+}
+function accuracyByField(){
+  const res={};
+  FIELD_KEYS.forEach(f=>res[f]={t:0,c:0,rate:null});
+  allAttempts().forEach(a=>{
+    const q=qById(a.qid); if(!q) return;
+    const f=fieldOf(q); res[f].t++; if(a.ok) res[f].c++;
+  });
+  FIELD_KEYS.forEach(f=>{ res[f].rate = res[f].t>0 ? Math.round(res[f].c/res[f].t*100) : null; });
+  return res;
+}
+function accuracyByGroup(level){ // level: "mid" | "sub"
+  const map={};
+  allAttempts().forEach(a=>{
+    const q=qById(a.qid); if(!q) return;
+    const f=fieldOf(q);
+    const key = (level==="sub") ? `${f}|${q.mid||"その他"}|${q.sub||"その他"}` : `${f}|${q.mid||"その他"}`;
+    if(!map[key]) map[key]={field:f, mid:q.mid||"その他", sub:q.sub||"", t:0,c:0};
+    map[key].t++; if(a.ok) map[key].c++;
+  });
+  return Object.values(map).map(o=>Object.assign(o,{rate: o.t?Math.round(o.c/o.t*100):0})).sort((a,b)=>a.rate-b.rate||b.t-a.t);
+}
+function weakQuestions(){
+  const last={};
+  allAttempts().sort((a,b)=>a.ts-b.ts).forEach(a=>{ last[a.qid]={ok:a.ok, ts:a.ts}; });
+  return Object.keys(last).filter(k=>!last[k].ok).sort((a,b)=>last[b].ts-last[a].ts);
+}
+function overallStats(){
+  const at=allAttempts();
+  const c=at.filter(a=>a.ok).length;
+  return { total:at.length, correct:c, rate: at.length?Math.round(c/at.length*100):null,
+           sessions:(ST.history||[]).length,
+           studyDays: new Set((ST.history||[]).map(h=>dayKey(new Date(h.ts)))).size };
+}
+function streakInfo(){
+  const days = new Set((ST.history||[]).map(h=>dayKey(new Date(h.ts))));
+  let n=0, cur=today();
+  if(!days.has(dayKey(cur))) cur=addDays(cur,-1);
+  while(days.has(dayKey(cur))){ n++; cur=addDays(cur,-1); }
+  return n;
+}
+
+/* ---------------- ルーティング ---------------- */
+const ROUTES = {
+  home:{title:"ホーム", icon:'<path d="M3 10.5 12 3l9 7.5V21H3z"/>'},
+  practice:{title:"問題演習", icon:'<path d="M4 5h16v14H4z"/><path d="M8 9h8M8 13h5"/>'},
+  quiz:{title:"出題中", icon:'<path d="M12 3v18M3 12h18"/>', hidden:true},
+  result:{title:"結果", icon:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>', hidden:true},
+  analysis:{title:"学習分析", icon:'<path d="M4 19V5M4 19h16"/><path d="M8 15l4-5 3 3 4-6"/>'},
+  history:{title:"学習履歴", icon:'<path d="M4 6h16M4 12h16M4 18h10"/>'},
+  roadmap:{title:"学習ロードマップ", icon:'<path d="M4 6h16M4 12h16M4 18h16"/><circle cx="8" cy="6" r="2"/>'},
+  cards:{title:"用語カード", icon:'<path d="M3 6h7l2 3H3z"/><path d="M3 13h18v6H3z"/>'},
+  manage:{title:"問題管理", icon:'<path d="M5 4h14v16H5z"/><path d="M8 8h8M8 12h8M8 16h5"/>'}
+};
+const NAV_ORDER = ["home","practice","analysis","history","roadmap","cards","manage"];
+const TAB_ORDER = ["home","practice","analysis","roadmap"];
+
+let currentRoute = "home";
+let routeParam = null;
+
+function parseHash(){
+  const h = location.hash.replace(/^#\/?/,"");
+  const [r, ...rest] = h.split("/");
+  const name = ROUTES[r]?r:"home";
+  return {name, param: rest.join("/")||null};
+}
+function navigate(path){ location.hash = "#/"+path.replace(/^#\/?/,""); }
+function onHashChange(){
+  const {name,param}=parseHash();
+  if(name==="quiz" && !ST.session){ navigate("practice"); return; }
+  currentRoute=name; routeParam=param;
+  render();
+  window.scrollTo({top:0,behavior:"instant"});
+}
+
+/* ---------------- ナビ描画 ---------------- */
+function navHTML(){
+  const weak = weakQuestions().length;
+  const groups = [
+    {label:"学習", items:["home","practice"]},
+    {label:"ふりかえり", items:["analysis","history","roadmap"]},
+    {label:"その他", items:["cards","manage"]}
+  ];
+  return groups.map(g=>`
+    <div class="nav-group-label">${g.label}</div>
+    ${g.items.map(k=>`
+      <a class="nav-item${currentRoute===k||(currentRoute==="quiz"&&k==="practice")||(currentRoute==="result"&&k==="practice")?" active":""}" href="#/${k}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${ROUTES[k].icon}</svg>
+        <span>${ROUTES[k].title}</span>
+        ${k==="practice"&&weak?`<span class="nav-badge">${weak}</span>`:""}
+      </a>`).join("")}
+  `).join("");
+}
+function tabbarHTML(){
+  const iconMore = '<circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/>';
+  return TAB_ORDER.map(k=>`
+    <button data-act="tab" data-route="${k}" class="${currentRoute===k||(currentRoute==="quiz"&&k==="practice")?"active":""}">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${ROUTES[k].icon}</svg>
+      <span>${ROUTES[k].title.replace("学習","")}</span>
+    </button>`).join("") + `
+    <button data-act="open-menu"><svg viewBox="0 0 24 24" fill="currentColor">${iconMore}</svg><span>メニュー</span></button>`;
+}
+function paintChrome(){
+  $("#sidebar-nav").innerHTML = navHTML();
+  $("#tabbar").innerHTML = tabbarHTML();
+  const t = ROUTES[currentRoute]?ROUTES[currentRoute].title:"ホーム";
+  $("#tb-title").textContent = t;
+  const ex = parseDay(ST.settings.examDate);
+  const d = ex? diffDays(today(), ex):null;
+  $("#tb-days").textContent = d===null? "—" : (d>=0? `あと${d}日` : "受験日超過");
+  $("#spine-qcount").textContent = allQuestions().length;
+  const s = streakInfo();
+  $("#spine-streak").innerHTML = s>0? `<span style="font-size:11px">🔥 ${s}日連続で学習中</span>`:"";
+}
+
+/* ---------------- トースト / モーダル ---------------- */
+let toastTimer=null;
+function toast(msg){
+  const el=$("#toast");
+  $("#toast-in").textContent=msg;
+  el.classList.add("show");
+  if(toastTimer) clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>el.classList.remove("show"),2200);
+}
+function openModal(html, opts={}){
+  const back=$("#modal-back");
+  $("#modal").innerHTML=html;
+  back.classList.add("show");
+  document.body.style.overflow="hidden";
+  if(opts.after) setTimeout(()=>opts.after($("#modal")),0);
+}
+function closeModal(){
+  $("#modal-back").classList.remove("show");
+  $("#modal").innerHTML="";
+  document.body.style.overflow="";
+}
+
+/* ---------------- 共通パーツ ---------------- */
+function pillField(f){ const F=FIELDS[f]; return `<span class="pill ${F.cls}"><i class="dot ${F.cls}"></i>${F.short}</span>`; }
+function ringSVG(rate, size=132){
+  const r=(size-18)/2, c=2*Math.PI*r;
+  const val = rate==null?0:clamp(rate,0,100);
+  const col = val>=70? "#2f6b3a" : val>=50? "#a9682b" : "#b5532f";
+  return `<div class="ring" style="width:${size}px;height:${size}px;flex-basis:${size}px">
+    <svg viewBox="0 0 ${size} ${size}">
+      <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="#e7dfcc" stroke-width="10"/>
+      <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${col}" stroke-width="10" stroke-linecap="round"
+        stroke-dasharray="${c}" stroke-dashoffset="${c-(c*val/100)}" style="transition:stroke-dashoffset .8s cubic-bezier(.3,.9,.3,1)"/>
+    </svg>
+    <div class="ring-val"><b>${rate==null?"—":val+"<small style='font-size:15px'>%</small>"}</b><span>正答率</span></div>
+  </div>`;
+}
+function barHTML(rate, cls="", small=false){
+  const v = rate==null?0:clamp(rate,0,100);
+  return `<div class="bar ${cls} ${small?"sm":""}"><i style="width:${v}%"></i></div>`;
+}
+
+/* ---------------- ビュー登録 / アクション基盤 ---------------- */
+const VIEWS = {};
+const ACT = {};
+function act(name, fn){ ACT[name]=fn; }
+document.addEventListener("click", e=>{
+  const el = e.target.closest("[data-act]");
+  if(!el) return;
+  const fn = ACT[el.dataset.act];
+  if(!fn) return;
+  e.preventDefault();
+  fn(el, e, el.dataset);
+});
+document.addEventListener("click", e=>{
+  if(e.target.id==="scrim" || e.target.id==="modal-back"){ closeModal(); $("#spine").classList.remove("open"); $("#scrim").classList.remove("show"); }
+});
+document.addEventListener("keydown", e=>{
+  if(e.key==="Escape"){ closeModal(); $("#spine").classList.remove("open"); $("#scrim").classList.remove("show"); }
+});
+
+act("tab", el=>navigate(el.dataset.route));
+act("open-menu", ()=>{ $("#spine").classList.add("open"); $("#scrim").classList.add("show"); });
+act("close-modal", ()=>closeModal());
+
+/* =========================================================================
+   ビュー：ホーム / 問題演習 / 出題 / 結果
+   ========================================================================= */
+const CHOICE_MARKS = ["ア","イ","ウ","エ"];
+
+/* ---------------- 学習ロードマップの計画生成 ---------------- */
+function buildPlan(){
+  const exam = parseDay(ST.settings.examDate);
+  const t = today();
+  if(!exam) return {exam:null, days:[], studyDates:[], total:0, n:0, weights:{}};
+  const total = Math.max(0, diffDays(t, exam));
+  const wd = (ST.settings.weekdays && ST.settings.weekdays.length) ? ST.settings.weekdays : [2,4,6,0];
+  const acc = accuracyByField();
+  const target = ST.settings.targetRate || 70;
+  const weights = {};
+  FIELD_KEYS.forEach(f=>{
+    const r = acc[f].rate;
+    weights[f] = r===null ? 1.7 : 1 + Math.max(0, target-r)/35;
+  });
+  const studyDates = [];
+  for(let i=0;i<total;i++){ const d=addDays(t,i); if(wd.includes(d.getDay())) studyDates.push(d); }
+  const n = studyDates.length;
+  // 最大剰余法で「苦手分野ほど多く」なるよう配分を決める
+  const counts = {strategy:0,management:0,technology:0};
+  const totalW = FIELD_KEYS.reduce((s,f)=>s+weights[f],0);
+  const quotas = FIELD_KEYS.map(f=>({f, q: totalW>0 ? weights[f]/totalW*n : n/FIELD_KEYS.length}));
+  let assigned = 0;
+  quotas.forEach(o=>{ counts[o.f] = Math.floor(o.q); assigned += counts[o.f]; });
+  const remainders = quotas.slice().sort((a,b)=>(b.q-Math.floor(b.q))-(a.q-Math.floor(a.q)));
+  for(let i=0; assigned<n && i<remainders.length*2; i++){
+    const o = remainders[i % remainders.length];
+    counts[o.f]++; assigned++;
+  }
+  // 同じ分野が連続しないよう、残数の多い分野から順に並べる
+  const left = Object.assign({}, counts);
+  const seq = [];
+  let prev = null;
+  for(let i=0;i<n;i++){
+    const cands = FIELD_KEYS.filter(f=>left[f]>0);
+    if(!cands.length) break;
+    cands.sort((a,b)=> (left[b]-left[a]) || (a===prev?1:-1) - (b===prev?1:-1));
+    let pick = cands.find(f=>f!==prev) || cands[0];
+    seq.push(pick); left[pick]--; prev = pick;
+  }
+  while(seq.length<n) seq.push(FIELD_KEYS[0]);
+  const mockIdx = new Set();
+  if(n>=6){ mockIdx.add(Math.round(n*0.4)); mockIdx.add(Math.round(n*0.75)); }
+  const weakN = weakQuestions().length;
+  const minutes = ST.settings.minutesPerDay || 60;
+  const days = studyDates.map((d,i)=>{
+    let type="drill", field=seq[i];
+    if(i===n-1){ type="final"; field=null; }
+    else if(i===n-2){ type="term"; field=null; }
+    else if(mockIdx.has(i)){ type="mock"; field=null; }
+    else if(i%3===2 && weakN>=8){ type="review"; field=null; }
+    let title="", detail="", mins=minutes;
+    if(type==="drill"){
+      title = `${FIELDS[field].short}系 10問演習`;
+      detail = `問題演習で「${FIELDS[field].name}」を10問。間違えた問題は解説をその場で読み、用語カードを5枚。`;
+    } else if(type==="review"){
+      title = "弱点復習（誤答ノート）";
+      detail = `間違えた問題だけを復習モードで解き直す。今の誤答は${weakN}問。`;
+    } else if(type==="mock"){
+      title = "模擬試験 60問（時間を計る）";
+      detail = "本番と同じ4択・60問を制限時間60分で。結果画面で分野別の弱点を確認する。";
+      mins = 60;
+    } else if(type==="term"){
+      title = "用語カード総復習";
+      detail = "用語カードを全分野から20枚。説明できない用語に「苦手」を付けて、直前にもう一度見る。";
+    } else {
+      title = "総仕上げ：誤答を全問やり直す";
+      detail = "復習モードで誤答ノートを空にする。正答率80%以上なら本番は十分戦える。";
+    }
+    return {date:d, key:dayKey(d), type, field, title, detail, mins, done: !!ST.roadmap[dayKey(d)]};
+  });
+  return {exam, days, studyDates, total, n, weights, counts};
+}
+
+/* ---------------- ホーム ---------------- */
+VIEWS.home = function(){
+  const st = overallStats();
+  const acc = accuracyByField();
+  const plan = buildPlan();
+  const weak = weakQuestions();
+  const session = ST.session;
+  const daysLeft = plan.exam ? diffDays(today(), plan.exam) : null;
+  const doneDays = plan.days.filter(d=>d.done).length;
+  const todayPlan = plan.days.find(d=>d.key===dayKey(today()));
+  const nextPlan = plan.days.find(d=>d.date > today()) || null;
+  const stk = streakInfo();
+
+  const resume = (session && session.idx < session.qids.length) ? `
+    <div class="card tight" style="border-color:#bcd3ce;background:linear-gradient(#f4fbfa,#eef7f5)">
+      <div class="between">
+        <div>
+          <div style="font-weight:700;font-size:13.5px">途中の演習があります</div>
+          <div class="small muted">${session.mode==="exam"?"模擬試験":"問題演習"} ・ ${session.idx+1} / ${session.qids.length} 問目まで</div>
+        </div>
+        <div class="flex">
+          <a class="btn btn-primary btn-sm" href="#/quiz">続きから再開</a>
+          <button class="btn btn-sm" data-act="discard-session">破棄</button>
+        </div>
+      </div>
+    </div>` : "";
+
+  const todayTask = todayPlan ? `
+    <li class="${todayPlan.done?"done":""}">
+      <span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+      <span class="tx">${esc(todayPlan.title)}<span class="meta">${todayPlan.mins}分 ・ ${esc(todayPlan.detail)}</span></span>
+      <button class="btn btn-sm" data-act="go-plan" data-type="${todayPlan.type}" data-field="${todayPlan.field||""}">開始</button>
+    </li>` : `
+    <li>
+      <span class="ck" style="border-style:dashed"></span>
+      <span class="tx">今日は休養日です<span class="meta">${nextPlan?`次の学習日は ${jpDate(nextPlan.date)}：${esc(nextPlan.title)}`:"計画づくりから始めましょう"}</span></span>
+      <button class="btn btn-sm" data-act="start-quick" data-field="all" data-count="10">軽く10問</button>
+    </li>`;
+
+  const fieldBars = FIELD_KEYS.map(f=>{
+    const r = acc[f];
+    return `<div class="field-row">
+      <span class="fname"><i class="dot ${f}"></i>${FIELDS[f].short}</span>
+      ${barHTML(r.rate, f)}
+      <span class="fval">${r.rate===null?'<b>—</b>':`<b>${r.rate}%</b> <span class="small">${r.c}/${r.t}</span>`}</span>
+    </div>`;
+  }).join("");
+
+  return {html:`
+    <div class="page-head">
+      <div>
+        <div class="eyebrow">Dashboard</div>
+        <h1>学習ノート</h1>
+      </div>
+      <div class="spacer"></div>
+      <a class="btn btn-sm" href="#/manage">設定・問題管理</a>
+    </div>
+
+    ${resume}
+
+    <section class="hero" style="margin-top:${resume?"14px":"0"}">
+      <div class="eyebrow">Countdown</div>
+      <h2>${plan.exam? `ITパスポート試験まで` : "受験日を設定しましょう"}</h2>
+      ${plan.exam? `
+        <div class="countdown">
+          <span class="num">${daysLeft>=0?daysLeft:0}</span><span class="unit">日</span>
+          <span class="rest">${plan.exam.getFullYear()}/${plan.exam.getMonth()+1}/${plan.exam.getDate()}(${WD[plan.exam.getDay()]}) ・ 学習日 ${doneDays}/${plan.n}日完了</span>
+        </div>
+        ${barHTML(plan.n? Math.round(doneDays/plan.n*100):0)}
+        <div class="small muted" style="margin-top:6px">
+          残りの学習日は <b>${Math.max(0, plan.n-doneDays)}日</b>。${stk>0?`連続学習 ${stk}日。`:""}
+          1日 ${ST.settings.minutesPerDay}分 × 週${(ST.settings.weekdays||[]).length}日ペース。
+        </div>` : `
+        <p class="lead">受験日を入力すると、そこから逆算した学習計画を自動で作成します。</p>
+        <a class="btn btn-primary" href="#/manage">受験日を設定する</a>`}
+      <div class="quick-grid">
+        <button class="quick" data-act="start-quick" data-field="all" data-count="10">
+          <span class="q-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 4h14v16H5z"/><path d="M9 9h6M9 13h6"/></svg></span>
+          <span class="q-t">10問だけ演習</span><span class="q-d">ランダム4択。まずは1セット</span>
+        </button>
+        <button class="quick tone-v" data-act="go-review">
+          <span class="q-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg></span>
+          <span class="q-t">間違いだけ復習</span><span class="q-d">${weak.length? `${weak.length}問が復習待ち`:"誤答はありません"}</span>
+        </button>
+        <button class="quick tone-s" data-act="start-mock">
+          <span class="q-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6"/></svg></span>
+          <span class="q-t">模擬試験 60問</span><span class="q-d">制限時間60分・本番形式</span>
+        </button>
+        <button class="quick tone-m" data-act="go-terms">
+          <span class="q-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 6h7l2 3H3z"/><path d="M3 13h18v6H3z"/></svg></span>
+          <span class="q-t">用語カード</span><span class="q-d">${(window.TERMS||[]).length}枚で暗記</span>
+        </button>
+      </div>
+    </section>
+
+    <div class="grid-2" style="margin-top:16px">
+      <section class="card">
+        <div class="card-title">今日のタスク<span class="ct-sub">${jpDate(today())}</span></div>
+        <ul class="today-list">${todayTask}</ul>
+        <hr class="hr-dash">
+        <div class="between">
+          <div class="small muted">全体 ${st.total}問 ・ 正答率 ${st.rate===null?"—":st.rate+"%"}</div>
+          <a class="btn btn-sm" href="#/roadmap">計画を見る</a>
+        </div>
+      </section>
+      <section class="card">
+        <div class="card-title">分野別の正答率<span class="ct-sub">全期間</span></div>
+        <div class="field-rows">${fieldBars}</div>
+        ${weak.length? `<div class="note-box mt16" style="margin-bottom:0">
+          <b>弱点メモ：</b>${weak.length}問が未回復です。<a href="#/practice">復習モード</a>で解き直しましょう。
+        </div>`:`<div class="small muted mt16">まだ誤答はありません。この調子で演習を続けましょう。</div>`}
+      </section>
+    </div>
+
+    <section class="card" style="margin-top:16px">
+      <div class="card-title">記録のあらまし</div>
+      <div class="stat-row">
+        <div class="stat"><span class="lbl">総解答数</span><span class="val">${st.total}<small>問</small></span><span class="note">セッション ${st.sessions}回</span></div>
+        <div class="stat"><span class="lbl">全体正答率</span><span class="val">${st.rate===null?"—":st.rate}<small>${st.rate===null?"":"%"}</small></span><span class="note">目標 ${ST.settings.targetRate}%</span></div>
+        <div class="stat"><span class="lbl">学習した日</span><span class="val">${st.studyDays}<small>日</small></span><span class="note">連続 ${stk}日</span></div>
+      </div>
+    </section>
+  `, after(){}};
+};
+
+/* ---------------- 問題演習（設定） ---------------- */
+let practiceDraft = {mode:"field", field:"all", count:10, pastOnly:false};
+
+VIEWS.practice = function(){
+  const d = practiceDraft;
+  const weak = weakQuestions();
+  const counts = {strategy:0,management:0,technology:0};
+  const past = {strategy:0,management:0,technology:0};
+  allQuestions().forEach(q=>{ counts[fieldOf(q)]++; if(q.p) past[fieldOf(q)]++; });
+  const totalQ = allQuestions().length;
+  const acc = accuracyByField();
+
+  return {html:`
+    <div class="page-head">
+      <div><div class="eyebrow">Practice</div><h1>問題演習</h1></div>
+      <div class="spacer"></div>
+      <span class="pill">収録 ${totalQ}問</span>
+    </div>
+
+    <section class="card">
+      <div class="card-title">出題範囲</div>
+      <div class="chip-row" id="field-chips">
+        <button class="chip ${d.field==="all"?"on":""}" data-act="pick-field" data-field="all">ランダム（全分野）<span class="small muted">${totalQ}</span></button>
+        ${FIELD_KEYS.map(f=>`<button class="chip ${d.field===f?"on "+f[0]+"-on":""}" data-act="pick-field" data-field="${f}">
+          ${FIELDS[f].short}<span class="small muted">${counts[f]}</span></button>`).join("")}
+      </div>
+      <div class="small muted mt8">分野別の正答率：${FIELD_KEYS.map(f=>`${FIELDS[f].short} ${acc[f].rate===null?"—":acc[f].rate+"%"}`).join(" ／ ")}</div>
+      <hr class="hr-dash">
+      <div class="between">
+        <label class="chk-line"><input type="checkbox" id="past-only" ${d.pastOnly?"checked":""} data-act="toggle-past"> 過去問ベースの問題だけを出題する</label>
+        <span class="small muted">※ 実際の過去問を再構成した問題に「過去問」ラベルを付けています</span>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-title">出題数</div>
+      <div class="seg wide" id="count-seg">
+        ${[10,20,30].map(n=>`<button class="${d.count===n?"on":""}" data-act="pick-count" data-count="${n}">${n}問</button>`).join("")}
+      </div>
+      <div class="small muted mt8">1セッションの目安：10問＝約10分／20問＝約20分／30問＝約30分</div>
+    </section>
+
+    <section class="card">
+      <div class="card-title">モード</div>
+      <div class="grid-3">
+        <button class="quick" data-act="start-quick" data-field="${d.field}" data-count="${d.count}" data-past="${d.pastOnly?1:0}">
+          <span class="q-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 4h14v16H5z"/><path d="M9 9h6M9 13h6"/></svg></span>
+          <span class="q-t">通常演習</span><span class="q-d">1問ごとに正誤と解説を表示</span>
+        </button>
+        <button class="quick tone-v" data-act="go-review">
+          <span class="q-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg></span>
+          <span class="q-t">復習モード</span><span class="q-d">${weak.length? `間違えた${weak.length}問だけ`:"誤答はありません"}</span>
+        </button>
+        <button class="quick tone-s" data-act="start-mock">
+          <span class="q-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6"/></svg></span>
+          <span class="q-t">模擬試験</span><span class="q-d">60問・制限時間60分</span>
+        </button>
+      </div>
+    </section>
+
+    <div class="note-box">
+      <b>使い方：</b>まず10問解いてみて、結果画面で分野別の弱点を確認。誤答は自動的に「復習モード」にたまります。
+      解説を読んだら、関連する用語カードをめくると定着しやすくなります。
+    </div>
+  `, after(){}};
+};
+
+/* ---------------- セッション開始 ---------------- */
+function pickQuestions(opts){
+  const {mode="practice", field="all", count=10, pastOnly=false} = opts||{};
+  let pool;
+  if(mode==="review"){
+    const ids = weakQuestions();
+    pool = ids.map(id=>qById(id)).filter(Boolean);
+    if(!pool.length) return null;
+    return shuffle(pool).slice(0, Math.min(count||pool.length, pool.length));
+  }
+  pool = allQuestions();
+  if(field!=="all") pool = pool.filter(q=>fieldOf(q)===field);
+  if(pastOnly) pool = pool.filter(q=>q.p);
+  if(!pool.length) return null;
+  if(mode==="exam"){
+    // 分野のバランスを取って60問
+    const per = Math.ceil(count/3);
+    let picked=[];
+    FIELD_KEYS.forEach(f=>{
+      const fp = shuffle(allQuestions().filter(q=>fieldOf(q)===f));
+      picked = picked.concat(fp.slice(0,per));
+    });
+    if(picked.length<count){
+      const rest = shuffle(allQuestions().filter(q=>!picked.includes(q)));
+      picked = picked.concat(rest.slice(0, count-picked.length));
+    }
+    return shuffle(picked).slice(0,count);
+  }
+  const n = Math.min(count, pool.length);
+  return shuffle(pool).slice(0,n);
+}
+
+function startSession(opts){
+  const qs = pickQuestions(opts);
+  if(!qs || !qs.length){ toast("条件に合う問題がありません"); return; }
+  ST.session = {
+    id: uid("s"),
+    mode: opts.mode||"practice",
+    field: opts.field||"all",
+    count: qs.length,
+    qids: qs.map(q=>q.id),
+    idx: 0,
+    answers: new Array(qs.length).fill(null),
+    startTs: Date.now(),
+    limitSec: opts.mode==="exam" ? (opts.limitSec||3600) : null,
+    endsAt: opts.mode==="exam" ? Date.now()+(opts.limitSec||3600)*1000 : null
+  };
+  save(true);
+  navigate("quiz");
+}
+
+act("pick-field", el=>{ practiceDraft.field = el.dataset.field; render(); });
+act("pick-count", el=>{ practiceDraft.count = +el.dataset.count; render(); });
+act("toggle-past", el=>{ practiceDraft.pastOnly = !!el.checked; });
+act("start-quick", el=>{
+  startSession({mode:"practice", field: el.dataset.field||"all", count:+el.dataset.count||10, pastOnly: el.dataset.past==="1" || practiceDraft.pastOnly});
+});
+act("start-mock", ()=>{ startSession({mode:"exam", field:"all", count:60, limitSec:3600}); });
+act("go-review", ()=>{
+  const w = weakQuestions();
+  if(!w.length){ toast("復習する誤答がありません。まず演習をしましょう"); navigate("practice"); return; }
+  startSession({mode:"review", field:"all", count: Math.min(30, w.length)});
+});
+act("go-terms", ()=>{ navigate("cards"); });
+act("discard-session", ()=>{
+  openModal(`<h3 id="modal-title">途中の演習を破棄しますか？</h3>
+    <p class="m-sub">このセッションの解答は記録に残りません。</p>
+    <div class="modal-foot"><button class="btn" data-act="close-modal">やめる</button>
+    <button class="btn btn-vermilion" data-act="confirm-discard">破棄する</button></div>`);
+});
+act("confirm-discard", ()=>{ ST.session=null; save(true); closeModal(); toast("演習を破棄しました"); render(); });
+
+act("go-plan", el=>{
+  const type = el.dataset.type, field = el.dataset.field;
+  if(type==="mock"){ startSession({mode:"exam", count:60, limitSec:3600}); }
+  else if(type==="review"||type==="final"){
+    const w=weakQuestions();
+    if(!w.length){ toast("誤答がありません。通常演習に進みます"); startSession({mode:"practice", field:"all", count:10}); return; }
+    startSession({mode:"review", count: Math.min(30, w.length)});
+  }
+  else if(type==="term"){ navigate("cards"); }
+  else { startSession({mode:"practice", field: field||"all", count:10}); }
+});
+
+/* ---------------- 出題 ---------------- */
+let timerHandle = null;
+VIEWS.quiz = function(){
+  const s = ST.session;
+  if(!s){ navigate("practice"); return {html:""}; }
+  const qi = Math.min(s.idx, s.qids.length-1);
+  const q = qById(s.qids[qi]);
+  if(!q){ ST.session=null; save(true); navigate("practice"); return {html:""}; }
+  const ans = s.answers[qi];
+  const isExam = s.mode==="exam";
+  const answered = !!ans && (ans.locked || isExam===false);
+  const locked = !!(ans && ans.locked);
+  const total = s.qids.length;
+
+  const track = s.qids.map((_,i)=>{
+    const a = s.answers[i];
+    let cls = "";
+    if(a && (a.locked || (a.ok!==undefined && !isExam))) cls = a.ok? "ok":"ng";
+    else if(i===qi) cls="now";
+    return `<i class="${cls}"></i>`;
+  }).join("");
+
+  const choices = q.c.map((txt,i)=>{
+    let cls="";
+    if(ans && ans.pick===i) cls+=" sel";
+    if(locked){ if(i===q.a) cls=" correct"; else if(ans.pick===i) cls=" wrong"; }
+    const mk = locked ? (i===q.a? '<span class="mk">正解</span>' : (ans.pick===i? '<span class="mk">あなたの解答</span>':"")) : "";
+    return `<li><button class="choice${cls}" data-act="choose" data-i="${i}" ${locked||(isExam&&false)?"disabled":""}>
+      <span class="k">${CHOICE_MARKS[i]}</span><span>${esc(txt)}</span>${mk}</button></li>`;
+  }).join("");
+
+  const explain = locked ? `
+    <div class="explain">
+      <div class="ex-head">
+        <span class="res ${ans.ok?"":"wrong"}" style="color:${ans.ok?"#2f6b3a":"#9c4526"}">${ans.ok? "○ 正解":"× 不正解"}</span>
+        <span class="muted small">正解は「${CHOICE_MARKS[q.a]}」</span>
+      </div>
+      <p>${esc(q.e||"")}</p>
+      ${q.pt?`<div class="point"><b>暗記：</b>${esc(q.pt)}</div>`:""}
+    </div>` : "";
+
+  const isLast = qi===total-1;
+  const footer = locked ? `
+      <div class="quiz-foot">
+        <span class="kbd-hint">キー操作：A〜D で解答 ／ Enter で次へ</span>
+        <span class="spacer"></span>
+        ${qi>0? `<button class="btn" data-act="prev-q">← 前の問題</button>`:""}
+        <button class="btn btn-primary" data-act="next-q">${isLast? "結果を見る":"次の問題 →"}</button>
+      </div>` : (isExam ? `
+      <div class="quiz-foot">
+        <span class="kbd-hint">解答を選んで「次へ」。あとで戻って変更できます。</span>
+        <span class="spacer"></span>
+        ${qi>0? `<button class="btn" data-act="prev-q">← 前へ</button>`:""}
+        ${isLast? `<button class="btn btn-vermilion" data-act="finish-exam">採点する</button>`
+                 : `<button class="btn btn-primary" data-act="next-q">次へ →</button>`}
+      </div>` : `<div class="quiz-foot"><span class="kbd-hint">選択肢をタップすると解答します</span></div>`);
+
+  const timerHTML = isExam ? `<span class="timer" id="quiz-timer">--:--</span>` : "";
+
+  return {html:`
+    <div class="quiz-top">
+      <span class="pill">${isExam?"模擬試験":(s.mode==="review"?"復習モード":"通常演習")}</span>
+      <div class="progress-track">${track}</div>
+      <span class="quiz-meta"><b>${qi+1}</b> / ${total}</span>
+      ${timerHTML}
+    </div>
+    <article class="q-card">
+      <div class="q-head">
+        ${pillField(fieldOf(q))}
+        <span class="pill">${esc(q.mid||"")}</span>
+        <span class="pill">${esc(q.sub||"")}</span>
+        ${q.p?`<span class="pill past">過去問ベース${q.y?` ${q.y}年度`:""}</span>`:""}
+      </div>
+      <p class="q-text">${esc(q.q)}</p>
+      <ul class="choices">${choices}</ul>
+      ${explain}
+      ${footer}
+    </article>
+    <div class="flex" style="justify-content:space-between;margin-top:14px">
+      <button class="btn btn-sm btn-ghost" data-act="pause-quiz">中断して保存</button>
+      <span class="small muted">${s.mode==="review"?"誤答ノートから出題中":""}</span>
+    </div>
+  `, after(){
+    if(isExam) startTimer();
+  }};
+};
+
+function startTimer(){
+  stopTimer();
+  updateTimer();
+  timerHandle = setInterval(updateTimer, 1000);
+}
+function stopTimer(){ if(timerHandle){ clearInterval(timerHandle); timerHandle=null; } }
+function updateTimer(){
+  const s=ST.session;
+  if(!s||!s.endsAt){ stopTimer(); return; }
+  const left = Math.max(0, Math.round((s.endsAt - Date.now())/1000));
+  const el = $("#quiz-timer");
+  if(el){ el.textContent = fmtTime(left); el.classList.toggle("warn", left<=300); }
+  if(left<=0){ stopTimer(); toast("制限時間になりました。採点します"); finishSession(true); }
+}
+
+function applyChoice(pick){
+  const s=ST.session; if(!s) return;
+  const q=qById(s.qids[s.idx]); if(!q) return;
+  const cur = s.answers[s.idx];
+  if(cur && cur.locked) return;
+  const ok = pick===q.a;
+  s.answers[s.idx] = {qid:q.id, pick, ok, ts:Date.now()};
+  if(s.mode!=="exam") s.answers[s.idx].locked = true;
+  save();
+  render();
+  if(s.mode!=="exam"){ setTimeout(()=>{ const b=$(".q-card .explain"); if(b) b.scrollIntoView({block:"nearest",behavior:"smooth"}); },60); }
+}
+
+act("choose", (el)=>{ applyChoice(+el.dataset.i); });
+
+act("next-q", ()=>{
+  const s=ST.session; if(!s) return;
+  if(s.answers[s.idx]===null){ toast("選択肢を選んでください"); return; }
+  if(s.idx < s.qids.length-1){ s.idx++; save(true); render(); }
+  else if(s.mode==="exam"){ confirmFinish(); }
+  else { finishSession(false); }
+});
+act("prev-q", ()=>{ const s=ST.session; if(!s||s.idx===0) return; s.idx--; save(true); render(); });
+act("finish-exam", ()=>confirmFinish());
+function confirmFinish(){
+  const s=ST.session; if(!s) return;
+  const un = s.answers.filter(a=>!a).length;
+  openModal(`<h3 id="modal-title">採点しますか？</h3>
+    <p class="m-sub">${un? `未解答が ${un}問あります。`:"すべて解答済みです。"}採点するとこのセッションは終了します。</p>
+    <div class="modal-foot"><button class="btn" data-act="close-modal">戻る</button>
+    <button class="btn btn-vermilion" data-act="do-finish">採点する</button></div>`);
+}
+act("do-finish", ()=>{ closeModal(); finishSession(false); });
+act("pause-quiz", ()=>{ save(true); stopTimer(); toast("保存しました。ホームから再開できます"); navigate("home"); });
+
+function finishSession(timeup){
+  const s=ST.session; if(!s) return;
+  stopTimer();
+  const answers = s.qids.map((qid,i)=>{
+    const a = s.answers[i] || {qid, pick:null, ok:false, ts:Date.now()};
+    return {qid, pick:a.pick, ok:!!a.ok, ts:a.ts||Date.now()};
+  });
+  const correct = answers.filter(a=>a.ok).length;
+  const rec = {
+    id: s.id, ts: Date.now(), mode: s.mode, field: s.field,
+    count: answers.length, correct,
+    rate: Math.round(correct/answers.length*100),
+    sec: Math.round((Date.now()-s.startTs)/1000),
+    timeup: !!timeup,
+    answers
+  };
+  ST.history = ST.history || [];
+  ST.history.push(rec);
+  if(ST.history.length>300) ST.history = ST.history.slice(-300);
+  // ストリーク更新
+  const todayK = dayKey(today());
+  if(ST.streak.last !== todayK){
+    const y = dayKey(addDays(today(),-1));
+    ST.streak.days = (ST.streak.last===y)? (ST.streak.days||0)+1 : 1;
+    ST.streak.last = todayK;
+  }
+  ST.session = null;
+  save(true);
+  navigate("result/"+rec.id);
+}
+
+/* ---------------- 結果 ---------------- */
+VIEWS.result = function(param){
+  const rec = (ST.history||[]).slice().reverse().find(h=>h.id===param) || (ST.history||[]).slice(-1)[0];
+  if(!rec) return {html:`<div class="empty"><span class="em-ico">📄</span>結果がありません</div>`};
+  const byField = {};
+  FIELD_KEYS.forEach(f=>byField[f]={t:0,c:0});
+  const bySub = {};
+  rec.answers.forEach(a=>{
+    const q=qById(a.qid); if(!q) return;
+    const f=fieldOf(q);
+    byField[f].t++; if(a.ok) byField[f].c++;
+    const k=`${f}|${q.mid||"その他"}|${q.sub||"その他"}`;
+    if(!bySub[k]) bySub[k]={field:f,mid:q.mid,sub:q.sub,t:0,c:0};
+    bySub[k].t++; if(a.ok) bySub[k].c++;
+  });
+  const subs = Object.values(bySub).map(o=>Object.assign(o,{rate:Math.round(o.c/o.t*100)})).sort((a,b)=>a.rate-b.rate||b.t-a.t);
+  const weakSubs = subs.filter(o=>o.rate<70);
+  const pass = rec.rate>=70;
+  const wrongIds = rec.answers.filter(a=>!a.ok).map(a=>a.qid);
+  const modeName = rec.mode==="exam"?"模擬試験":(rec.mode==="review"?"復習モード":"通常演習");
+  const verdict = rec.mode==="exam"
+      ? (rec.rate>=70? "合格ライン到達（目安）" : rec.rate>=60? "あと一歩。弱点を補強しましょう":"基礎の積み直しが必要です")
+      : (rec.rate>=80? "よくできました" : rec.rate>=60? "あと少しで定着します":"解説を読んで復習しましょう");
+
+  return {html:`
+    <div class="page-head">
+      <div><div class="eyebrow">Result</div><h1>結果</h1></div>
+      <div class="spacer"></div>
+      <span class="pill">${new Date(rec.ts).toLocaleString("ja-JP",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"})}</span>
+    </div>
+
+    <section class="card">
+      <div class="score-panel">
+        ${ringSVG(rec.rate)}
+        <div style="flex:1;min-width:200px">
+          <div class="result-verdict ${pass?"pass":(rec.rate>=60?"near":"fail")}">${verdict}</div>
+          <div class="small muted mb8">${modeName} ・ ${rec.count}問 ・ 正解 ${rec.correct}問 ・ 所要 ${fmtTime(rec.sec)}${rec.timeup?"（時間切れ）":""}</div>
+          <div class="flex">
+            ${wrongIds.length? `<button class="btn btn-primary btn-sm" data-act="retry-wrong" data-ids="${wrongIds.join(",")}">間違えた${wrongIds.length}問を解き直す</button>`:""}
+            <button class="btn btn-sm" data-act="start-quick" data-field="all" data-count="10">もう一度10問</button>
+            <a class="btn btn-sm" href="#/analysis">分析を見る</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="grid-2" style="margin-top:16px">
+      <section class="card">
+        <div class="card-title">分野別</div>
+        <div class="field-rows">
+          ${FIELD_KEYS.map(f=>{
+            const b=byField[f]; if(!b.t) return `<div class="field-row"><span class="fname"><i class="dot ${f}"></i>${FIELDS[f].short}</span>${barHTML(null,f)}<span class="fval muted">—</span></div>`;
+            const r=Math.round(b.c/b.t*100);
+            return `<div class="field-row"><span class="fname"><i class="dot ${f}"></i>${FIELDS[f].short}</span>${barHTML(r,f)}<span class="fval"><b>${r}%</b> <span class="small">${b.c}/${b.t}</span></span></div>`;
+          }).join("")}
+        </div>
+      </section>
+      <section class="card">
+        <div class="card-title">弱点の小分類<span class="ct-sub">正答率70%未満</span></div>
+        ${weakSubs.length? `<div class="subcat-list">
+          ${weakSubs.map(o=>`<div class="subcat">
+            <span class="sc-name"><i class="dot ${o.field}"></i><span>${esc(o.sub||o.mid)}</span></span>
+            <span class="sc-num">${o.c}/${o.t} ・ ${o.rate}%</span>
+            ${barHTML(o.rate,o.field,true)}
+          </div>`).join("")}
+        </div>`: `<div class="empty" style="padding:22px"><span class="em-ico">◎</span>このセッションに弱点はありません</div>`}
+      </section>
+    </div>
+
+    <section class="card" style="margin-top:16px">
+      <div class="card-title">解答一覧<span class="ct-sub">タップで解説を開く</span></div>
+      <div id="result-list">
+        ${rec.answers.map((a,i)=>{
+          const q=qById(a.qid); if(!q) return "";
+          return `<div class="qbank-item" style="border-left:3px solid ${a.ok?"#7fae86":"#d9a08a"}">
+            <div class="between" style="gap:8px">
+              <div class="qb-q" style="font-size:12.5px;${a.ok?"":"color:#7d4a33"}">${i+1}. ${esc(q.q)}</div>
+              <button class="btn btn-sm" data-act="show-answer" data-qid="${q.id}" data-pick="${a.pick==null?"":a.pick}">解説</button>
+            </div>
+            <div class="qb-meta">${pillField(fieldOf(q))}<span class="pill">${esc(q.sub||"")}</span>
+              <span class="pill ${a.ok?"ok":"ng"}">${a.ok?"正解":`誤答（正解 ${CHOICE_MARKS[q.a]}）`}</span></div>
+          </div>`;
+        }).join("")}
+      </div>
+    </section>
+
+    <div class="btn-row mt16">
+      <a class="btn" href="#/history">履歴一覧</a>
+      <a class="btn" href="#/roadmap">ロードマップ</a>
+      <a class="btn btn-primary" href="#/practice">次の演習へ</a>
+    </div>
+  `, after(){}};
+};
+
+act("retry-wrong", (el)=>{
+  const ids = (el.dataset.ids||"").split(",").filter(Boolean);
+  if(!ids.length) return;
+  ST.session = {id:uid("s"), mode:"review", field:"all", count:ids.length, qids:ids, idx:0,
+    answers:new Array(ids.length).fill(null), startTs:Date.now(), limitSec:null, endsAt:null};
+  save(true); navigate("quiz");
+});
+act("show-answer", (el)=>{
+  const q=qById(el.dataset.qid); if(!q) return;
+  const pick = el.dataset.pick===""? null : +el.dataset.pick;
+  openModal(`<h3 id="modal-title">解説</h3>
+    <div class="m-sub">${esc(labelOf(q))}${q.p?` ・ 過去問ベース`:""}</div>
+    <p style="font-family:var(--serif);line-height:1.85;font-size:14.5px">${esc(q.q)}</p>
+    <ul class="choices" style="margin-top:10px">
+      ${q.c.map((t,i)=>`<li><div class="choice ${i===q.a?"correct":(i===pick?"wrong":"")}" style="cursor:default">
+        <span class="k">${CHOICE_MARKS[i]}</span><span>${esc(t)}</span>
+        ${i===q.a?'<span class="mk">正解</span>':(i===pick?'<span class="mk">あなた</span>':"")}</div></li>`).join("")}
+    </ul>
+    <p class="small" style="margin-top:14px;line-height:1.9">${esc(q.e||"")}</p>
+    ${q.pt?`<div class="point"><b>暗記：</b>${esc(q.pt)}</div>`:""}
+    <div class="modal-foot"><button class="btn btn-primary" data-act="close-modal">閉じる</button></div>`);
+});
+
+/* =========================================================================
+   ビュー：学習分析 / 学習履歴
+   ========================================================================= */
+
+/* ---- SVGチャート ---- */
+function lineChart(points, opts={}){
+  const W=620, H=250, pl=42, pr=14, pt=16, pb=34;
+  const iw=W-pl-pr, ih=H-pt-pb;
+  if(!points.length) return `<div class="empty"><span class="em-ico">📈</span>データがまだありません</div>`;
+  const n=points.length;
+  const x = i => n===1? pl+iw/2 : pl + iw*(i/(n-1));
+  const y = v => pt + ih*(1-clamp(v,0,100)/100);
+  const grid = [0,25,50,75,100].map(v=>`
+    <line x1="${pl}" y1="${y(v)}" x2="${W-pr}" y2="${y(v)}" stroke="#e6dfcd" stroke-width="1" ${v===0?"":'stroke-dasharray="3 4"'}/>
+    <text x="${pl-8}" y="${y(v)+4}" text-anchor="end" font-size="10" fill="#9c9384">${v}</text>`).join("");
+  const target = opts.target? `<line x1="${pl}" y1="${y(opts.target)}" x2="${W-pr}" y2="${y(opts.target)}" stroke="#c9a227" stroke-width="1.5" stroke-dasharray="6 4"/>
+    <text x="${W-pr-2}" y="${y(opts.target)-5}" text-anchor="end" font-size="10" fill="#a8871f">目標 ${opts.target}%</text>`:"";
+  const path = points.map((p,i)=>`${i?"L":"M"}${x(i).toFixed(1)},${y(p.v).toFixed(1)}`).join(" ");
+  const area = `${path} L${x(n-1).toFixed(1)},${y(0)} L${x(0).toFixed(1)},${y(0)} Z`;
+  const dots = points.map((p,i)=>{
+    const col = p.v>=70? "#2f6b3a" : p.v>=50? "#a9682b":"#b5532f";
+    return `<circle cx="${x(i)}" cy="${y(p.v)}" r="4" fill="#fff" stroke="${col}" stroke-width="2.4"><title>${esc(p.lab)}：${p.v}%</title></circle>`;
+  }).join("");
+  const step = Math.max(1, Math.ceil(n/7));
+  const labels = points.map((p,i)=> (i%step===0||i===n-1)? `<text x="${x(i)}" y="${H-10}" text-anchor="middle" font-size="9.5" fill="#9c9384">${esc(p.short||p.lab)}</text>`:"").join("");
+  return `<div class="chart-box"><svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto" role="img" aria-label="正答率の推移">
+    <defs><linearGradient id="lg1" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#2f6f6b" stop-opacity=".22"/><stop offset="100%" stop-color="#2f6f6b" stop-opacity="0"/>
+    </linearGradient></defs>
+    ${grid}${target}
+    <path d="${area}" fill="url(#lg1)"/>
+    <path d="${path}" fill="none" stroke="#2f6f6b" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>
+    ${dots}${labels}
+  </svg></div>`;
+}
+function hbarChart(rows){
+  if(!rows.length) return `<div class="empty"><span class="em-ico">📊</span>データがまだありません</div>`;
+  const max = Math.max.apply(null, rows.map(r=>r.v).concat([1]));
+  return `<div style="display:flex;flex-direction:column;gap:7px">${rows.map(r=>`
+    <div style="display:grid;grid-template-columns:120px 1fr 52px;gap:8px;align-items:center;font-size:11.5px">
+      <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink-soft)" title="${esc(r.k)}">${esc(r.k)}</span>
+      <span style="height:11px;background:var(--paper-3);border-radius:6px;overflow:hidden;display:block">
+        <i style="display:block;height:100%;width:${(r.v/max*100).toFixed(1)}%;background:${r.col||"var(--accent)"};border-radius:6px;transition:width .6s"></i>
+      </span>
+      <span style="text-align:right;font-variant-numeric:tabular-nums">${r.v}%${r.n?`<span class="muted" style="font-size:9.5px"> ${r.n}</span>`:""}</span>
+    </div>`).join("")}</div>`;
+}
+
+/* ---- 分析 ---- */
+VIEWS.analysis = function(){
+  const st = overallStats();
+  const acc = accuracyByField();
+  const mids = accuracyByGroup("mid");
+  const subs = accuracyByGroup("sub");
+  const hist = (ST.history||[]);
+  const pts = hist.slice(-20).map((h,i)=>({
+    lab: `${new Date(h.ts).getMonth()+1}/${new Date(h.ts).getDate()} ${h.rate}%`,
+    short: `${new Date(h.ts).getMonth()+1}/${new Date(h.ts).getDate()}`,
+    v: h.rate
+  }));
+  const bySubField = {};
+  FIELD_KEYS.forEach(f=>{ bySubField[f]=subs.filter(s=>s.field===f); });
+  const weakTop = subs.filter(s=>s.rate<70 && s.t>=2).slice(0,6);
+  const totalT = st.total;
+  const mockHist = hist.filter(h=>h.mode==="exam");
+
+  return {html:`
+    <div class="page-head">
+      <div><div class="eyebrow">Analysis</div><h1>学習分析</h1></div>
+      <div class="spacer"></div>
+      <span class="pill">解答 ${totalT}問</span>
+    </div>
+
+    <div class="stat-row">
+      <div class="stat"><span class="lbl">全体正答率</span><span class="val">${st.rate===null?"—":st.rate}<small>${st.rate===null?"":"%"}</small></span><span class="note">目標 ${ST.settings.targetRate}%</span></div>
+      <div class="stat"><span class="lbl">セッション数</span><span class="val">${st.sessions}<small>回</small></span><span class="note">模擬試験 ${mockHist.length}回</span></div>
+      <div class="stat"><span class="lbl">復習待ちの誤答</span><span class="val">${weakQuestions().length}<small>問</small></span><span class="note"><a href="#/practice">復習する</a></span></div>
+    </div>
+
+    <section class="card" style="margin-top:16px">
+      <div class="card-title">分野別の正答率<span class="ct-sub">3分野</span></div>
+      <div class="field-rows">
+        ${FIELD_KEYS.map(f=>{
+          const r=acc[f];
+          return `<div class="field-row"><span class="fname"><i class="dot ${f}"></i>${FIELDS[f].name}</span>
+            ${barHTML(r.rate,f)}
+            <span class="fval">${r.rate===null?'<b>—</b>':`<b>${r.rate}%</b> <span class="small">${r.c}/${r.t}</span>`}</span></div>`;
+        }).join("")}
+      </div>
+      <div class="legend">
+        <span><i style="background:var(--c-strategy)"></i>ストラテジ</span>
+        <span><i style="background:var(--c-management)"></i>マネジメント</span>
+        <span><i style="background:var(--c-technology)"></i>テクノロジ</span>
+      </div>
+    </section>
+
+    <section class="card" style="margin-top:16px">
+      <div class="card-title">正答率の推移<span class="ct-sub">直近${pts.length}セッション</span></div>
+      ${lineChart(pts, {target: ST.settings.targetRate})}
+      ${pts.length? `<div class="small muted">点にカーソルを合わせると数値が出ます。直近の水準が目標線より上なら安定しています。</div>`:""}
+    </section>
+
+    <section class="card" style="margin-top:16px">
+      <div class="card-title">中分類ごとの正答率<span class="ct-sub">解答数の多い順</span></div>
+      ${mids.length? `<div class="table-wrap"><table class="tbl" style="min-width:520px">
+        <thead><tr><th>分野</th><th>中分類</th><th>正答率</th><th>解答</th><th style="width:34%">　</th></tr></thead>
+        <tbody>${mids.slice().sort((a,b)=>b.t-a.t).map(m=>`
+          <tr><td><i class="dot ${m.field}"></i> ${FIELDS[m.field].short}</td>
+          <td>${esc(m.mid)}</td>
+          <td class="num"><b style="color:${m.rate>=70?"#2f6b3a":m.rate>=50?"#a9682b":"#9c4526"}">${m.rate}%</b></td>
+          <td class="num">${m.c}/${m.t}</td>
+          <td>${barHTML(m.rate,m.field,true)}</td></tr>`).join("")}
+        </tbody></table></div>`: `<div class="empty"><span class="em-ico">📊</span>演習をすると中分類ごとに集計されます</div>`}
+    </section>
+
+    <section class="card" style="margin-top:16px">
+      <div class="card-title">小分類ごとの正答率<span class="ct-sub">システム監査などを細かく分析</span></div>
+      ${FIELD_KEYS.map(f=>{
+        const rows = bySubField[f].filter(s=>s.t>0).sort((a,b)=>a.rate-b.rate);
+        if(!rows.length) return "";
+        return `<div style="margin-bottom:16px">
+          <div class="small" style="font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:6px">
+            <i class="dot ${f}"></i>${FIELDS[f].name}
+          </div>
+          <div class="table-wrap"><table class="tbl" style="min-width:500px">
+            <tbody>${rows.map(s=>`<tr>
+              <td style="width:34%"><span class="small">${esc(s.mid)}</span><br><b style="font-size:12.5px">${esc(s.sub)}</b></td>
+              <td class="num" style="width:74px"><b style="color:${s.rate>=70?"#2f6b3a":s.rate>=50?"#a9682b":"#9c4526"}">${s.rate}%</b>
+                <span class="muted small">${s.c}/${s.t}</span></td>
+              <td>${barHTML(s.rate,f,true)}</td></tr>`).join("")}
+            </tbody></table></div>
+        </div>`;
+      }).join("") || `<div class="empty"><span class="em-ico">📊</span>演習をすると小分類ごとに集計されます</div>`}
+    </section>
+
+    <div class="grid-2" style="margin-top:16px">
+      <section class="card">
+        <div class="card-title">優先して復習すべき単元</div>
+        ${weakTop.length? `<div class="subcat-list">
+          ${weakTop.map(s=>`<div class="subcat">
+            <span class="sc-name"><i class="dot ${s.field}"></i><span>${esc(s.sub)}</span></span>
+            <span class="sc-num">${s.rate}% ・ ${s.c}/${s.t}</span>
+            ${barHTML(s.rate,s.field,true)}</div>`).join("")}
+        </div>
+        <button class="btn btn-primary btn-sm mt16" data-act="go-review">この弱点を復習する</button>`
+        : `<div class="empty" style="padding:22px"><span class="em-ico">◎</span>目立った弱点はありません</div>`}
+      </section>
+      <section class="card">
+        <div class="card-title">モード別の成績</div>
+        ${["practice","review","exam"].map(m=>{
+          const hs = hist.filter(h=>h.mode===m);
+          if(!hs.length) return `<div class="between" style="padding:7px 0;border-bottom:1px dashed var(--border)"><span class="small">${m==="practice"?"通常演習":m==="review"?"復習モード":"模擬試験"}</span><span class="small muted">未実施</span></div>`;
+          const avg = Math.round(hs.reduce((s,h)=>s+h.rate,0)/hs.length);
+          return `<div class="between" style="padding:7px 0;border-bottom:1px dashed var(--border)">
+            <span class="small">${m==="practice"?"通常演習":m==="review"?"復習モード":"模擬試験"}<span class="muted"> ${hs.length}回</span></span>
+            <span><b style="font-size:14px">${avg}%</b> <span class="muted small">平均</span></span></div>`;
+        }).join("")}
+        <div class="small muted mt16">模擬試験は本番と同じ60問。70%前後を安定して取れれば合格圏の目安です。</div>
+      </section>
+    </div>
+  `, after(){}};
+};
+
+/* ---- 履歴 ---- */
+VIEWS.history = function(){
+  const hist = (ST.history||[]).slice().reverse();
+  const st = overallStats();
+  const modeName = m => m==="exam"?"模擬試験":m==="review"?"復習":"通常";
+  return {html:`
+    <div class="page-head">
+      <div><div class="eyebrow">History</div><h1>学習履歴</h1></div>
+      <div class="spacer"></div>
+      <span class="pill">${hist.length}セッション</span>
+    </div>
+
+    <div class="stat-row">
+      <div class="stat"><span class="lbl">総解答数</span><span class="val">${st.total}<small>問</small></span></div>
+      <div class="stat"><span class="lbl">平均正答率</span><span class="val">${st.rate===null?"—":st.rate}<small>${st.rate===null?"":"%"}</small></span></div>
+      <div class="stat"><span class="lbl">学習日数</span><span class="val">${st.studyDays}<small>日</small></span></div>
+    </div>
+
+    <section class="card" style="margin-top:16px">
+      <div class="card-title">セッション一覧<span class="ct-sub">新しい順</span></div>
+      ${hist.length? `<div class="table-wrap"><table class="tbl">
+        <thead><tr><th>日時</th><th>モード</th><th>範囲</th><th>問題数</th><th>正答率</th><th>所要</th><th>　</th></tr></thead>
+        <tbody>${hist.map(h=>{
+          const dt=new Date(h.ts);
+          return `<tr>
+            <td class="num">${dt.getMonth()+1}/${dt.getDate()} ${pad2(dt.getHours())}:${pad2(dt.getMinutes())}</td>
+            <td><span class="pill ${h.mode==="exam"?"past":""}">${modeName(h.mode)}</span></td>
+            <td class="small">${h.field==="all"?"全分野":FIELDS[h.field]?FIELDS[h.field].short:"—"}</td>
+            <td class="num">${h.correct}/${h.count}</td>
+            <td class="num"><b style="color:${h.rate>=70?"#2f6b3a":h.rate>=50?"#a9682b":"#9c4526"}">${h.rate}%</b></td>
+            <td class="num small">${fmtTime(h.sec||0)}</td>
+            <td><a class="btn btn-sm" href="#/result/${h.id}">見る</a></td>
+          </tr>`;
+        }).join("")}</tbody></table></div>`
+        : `<div class="empty"><span class="em-ico">📄</span>まだ記録がありません<br><a class="btn btn-primary btn-sm mt16" href="#/practice">10問演習をはじめる</a></div>`}
+    </section>
+
+    ${hist.length? `<div class="flex mt16" style="justify-content:flex-end">
+      <button class="btn btn-sm" data-act="export-data">記録を書き出す</button>
+      <button class="btn btn-sm btn-ghost" style="color:var(--vermilion)" data-act="ask-clear-history">履歴をすべて削除</button>
+    </div>`:""}
+  `, after(){}};
+};
+
+act("ask-clear-history", ()=>{
+  openModal(`<h3 id="modal-title">学習履歴を削除しますか？</h3>
+    <p class="m-sub">セッションの記録・分析データが消えます。ロードマップのチェックと問題の編集内容は残ります。この操作は取り消せません。</p>
+    <div class="modal-foot"><button class="btn" data-act="close-modal">やめる</button>
+      <button class="btn btn-vermilion" data-act="clear-history-now">削除する</button></div>`);
+});
+act("clear-history-now", ()=>{
+  ST.history=[]; ST.session=null; save(true); closeModal(); toast("履歴を削除しました"); render();
+});
+
+/* =========================================================================
+   ビュー：学習ロードマップ / 用語カード
+   ========================================================================= */
+
+/* ---------------- ロードマップ ---------------- */
+VIEWS.roadmap = function(){
+  const plan = buildPlan();
+  const acc = accuracyByField();
+  const target = ST.settings.targetRate;
+  const doneN = plan.days.filter(d=>d.done).length;
+  const todayK = dayKey(today());
+
+  if(!plan.exam){
+    return {html:`
+      <div class="page-head"><div><div class="eyebrow">Roadmap</div><h1>学習ロードマップ</h1></div></div>
+      <div class="card">
+        <div class="empty" style="border:none;background:none">
+          <span class="em-ico">🗓️</span>
+          受験日が設定されていません。
+          <div class="mt16"><button class="btn btn-primary" data-act="open-settings">受験日を設定する</button></div>
+        </div>
+      </div>`};
+  }
+
+  // 週ごとにまとめる
+  const weeks = [];
+  plan.days.forEach((d,i)=>{
+    const wi = Math.floor(diffDays(today(), d.date)/7);
+    let w = weeks.find(x=>x.i===wi);
+    if(!w){ w={i:wi, days:[]}; weeks.push(w); }
+    w.days.push(d);
+  });
+
+  const weightRows = FIELD_KEYS.map(f=>{
+    const r = acc[f].rate;
+    const w = plan.weights[f];
+    const cnt = plan.counts[f];
+    return `<div class="field-row">
+      <span class="fname"><i class="dot ${f}"></i>${FIELDS[f].short}</span>
+      ${barHTML(r, f)}
+      <span class="fval">${r===null?'<b>—</b>':`<b>${r}%</b>`} <span class="small">配分${cnt}回</span></span>
+    </div>`;
+  }).join("");
+
+  return {html:`
+    <div class="page-head">
+      <div><div class="eyebrow">Roadmap</div><h1>学習ロードマップ</h1></div>
+      <div class="spacer"></div>
+      <button class="btn btn-sm" data-act="open-settings">条件を変更</button>
+    </div>
+
+    <section class="card">
+      <div class="between">
+        <div>
+          <div class="small muted">受験日</div>
+          <div style="font-family:var(--serif);font-size:20px">${plan.exam.getFullYear()}/${plan.exam.getMonth()+1}/${plan.exam.getDate()}（${WD[plan.exam.getDay()]}）</div>
+        </div>
+        <div class="right">
+          <div class="small muted">残り</div>
+          <div style="font-family:var(--serif);font-size:20px;color:var(--vermilion)">${Math.max(0,diffDays(today(),plan.exam))}日</div>
+        </div>
+        <div class="right">
+          <div class="small muted">学習日</div>
+          <div style="font-family:var(--serif);font-size:20px">${doneN} / ${plan.n}日</div>
+        </div>
+      </div>
+      <div class="mt16">${barHTML(plan.n? Math.round(doneN/plan.n*100):0)}</div>
+      <div class="small muted mt8">1日 ${ST.settings.minutesPerDay}分 × 週${(ST.settings.weekdays||[]).length}日（${(ST.settings.weekdays||[]).map(w=>WD[w]).join("・")}）。チェックすると進捗に反映されます。</div>
+    </section>
+
+    <section class="card">
+      <div class="card-title">分野の配分<span class="ct-sub">正答率が低い分野ほど多く出題</span></div>
+      <div class="field-rows">${weightRows}</div>
+      <div class="note-box mt16" style="margin-bottom:0">
+        <b>計画の考え方：</b>正答率が目標（${target}%）に届いていない分野ほど配分を増やし、演習の進み具合に合わせて毎回組み直しています。
+        苦手分野が伸びてくると、自然に他分野へ配分が移ります。
+      </div>
+    </section>
+
+    <div class="mt24">
+      ${weeks.map(w=>`
+        <div class="rm-week">
+          <div class="rm-week-head">
+            <span class="wk-tag">${w.i===0?"今週":`第${w.i+1}週`}</span>
+            <h4>${jpDate(w.days[0].date)} 〜 ${jpDate(w.days[w.days.length-1].date)}</h4>
+            <span class="wk-line"></span>
+            <span class="small muted">${w.days.filter(d=>d.done).length}/${w.days.length}日</span>
+          </div>
+          <div class="rm-days">
+            ${w.days.map(d=>{
+              const isToday = d.key===todayK;
+              const missed = !d.done && d.date < today();
+              return `<div class="rm-day ${isToday?"is-today":""} ${missed?"past-miss":""}">
+                <div class="rm-date">
+                  <span class="d">${d.date.getDate()}</span>
+                  <span class="m">${d.date.getMonth()+1}月</span>
+                  <span class="w">${WD[d.date.getDay()]}${isToday?"・今日":""}</span>
+                </div>
+                <div class="rm-body">
+                  <div class="t">${esc(d.title)}
+                    ${d.field?pillField(d.field):""}
+                    ${missed?`<span class="pill ng">未完了</span>`:""}</div>
+                  <div class="d2">${esc(d.detail)} ・ ${d.mins}分</div>
+                </div>
+                <div class="flex" style="gap:6px">
+                  <button class="btn btn-sm" data-act="go-plan" data-type="${d.type}" data-field="${d.field||""}">開始</button>
+                  <button class="rm-chk ${d.done?"on":""}" data-act="toggle-plan" data-key="${d.key}" aria-label="完了にする">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                  </button>
+                </div>
+              </div>`;
+            }).join("")}
+          </div>
+        </div>`).join("")}
+      ${plan.n===0? `<div class="empty"><span class="em-ico">🗓️</span>学習日がありません。受験日や学習曜日を見直してください。</div>`:""}
+    </div>
+
+    <div class="btn-row mt24">
+      <button class="btn" data-act="reset-plan">チェックをすべて外す</button>
+    </div>
+  `, after(){}};
+};
+
+act("toggle-plan", (el)=>{
+  const k = el.dataset.key;
+  ST.roadmap[k] = !ST.roadmap[k];
+  save(true);
+  render();
+  if(ST.roadmap[k]) toast("完了にしました");
+});
+act("reset-plan", ()=>{
+  openModal(`<h3 id="modal-title">チェックをすべて外しますか？</h3>
+    <p class="m-sub">ロードマップの完了チェックだけをリセットします。学習履歴は残ります。</p>
+    <div class="modal-foot"><button class="btn" data-act="close-modal">やめる</button>
+      <button class="btn btn-vermilion" data-act="do-reset-plan">リセット</button></div>`);
+});
+act("do-reset-plan", ()=>{ ST.roadmap={}; save(true); closeModal(); toast("リセットしました"); render(); });
+
+/* ---------------- 用語カード ---------------- */
+let cardState = {field:"all", idx:0, flipped:false, order:null, weakOnly:false};
+
+function cardList(){
+  let list = (window.TERMS||[]).slice();
+  if(cardState.field!=="all") list = list.filter(t=>t.field===cardState.field);
+  if(cardState.weakOnly) list = list.filter(t=>ST.cardWeak[t.id]);
+  if(!cardState.order || cardState.order.length!==list.length){
+    cardState.order = list.map(t=>t.id);
+  }
+  return cardState.order.map(id=>list.find(t=>t.id===id)).filter(Boolean);
+}
+
+VIEWS.cards = function(){
+  const list = cardList();
+  const total = (window.TERMS||[]).length;
+  const weakN = Object.keys(ST.cardWeak||{}).length;
+  const idx = clamp(cardState.idx, 0, Math.max(0,list.length-1));
+  cardState.idx = idx;
+  const c = list[idx];
+  const weak = c && ST.cardWeak[c.id];
+
+  return {html:`
+    <div class="page-head">
+      <div><div class="eyebrow">Flashcards</div><h1>用語カード</h1></div>
+      <div class="spacer"></div>
+      <span class="pill">${total}枚</span>
+    </div>
+
+    <section class="card tight">
+      <div class="between">
+        <div class="chip-row">
+          <button class="chip ${cardState.field==="all"?"on":""}" data-act="card-field" data-field="all">全分野</button>
+          ${FIELD_KEYS.map(f=>`<button class="chip ${cardState.field===f?"on "+f[0]+"-on":""}" data-act="card-field" data-field="${f}">${FIELDS[f].short}</button>`).join("")}
+        </div>
+        <div class="flex">
+          <button class="chip ${cardState.weakOnly?"on":""}" data-act="card-weak-only">苦手のみ ${weakN?`(${weakN})`:""}</button>
+          <button class="btn btn-sm" data-act="card-shuffle">シャッフル</button>
+        </div>
+      </div>
+    </section>
+
+    ${c? `
+    <div class="mt16 fc-stage">
+      <div class="fc ${cardState.flipped?"flip":""}" data-act="card-flip" role="button" tabindex="0" aria-label="カードをめくる">
+        <div class="fc-face">
+          <span class="fc-tag">${FIELDS[c.field].short} ／ ${esc(c.sub||"")}</span>
+          <div class="fc-term">${esc(c.term)}</div>
+          <div class="fc-hint">タップして答えを見る</div>
+        </div>
+        <div class="fc-face back">
+          <span class="fc-tag">${esc(c.term)}</span>
+          <div class="fc-def">${esc(c.def)}</div>
+          ${c.key? `<div class="fc-key"><b>ひと言：</b>${esc(c.key)}</div>`:""}
+          <div class="fc-hint">タップして用語に戻る</div>
+        </div>
+      </div>
+      <div class="fc-nav">
+        <button class="btn" data-act="card-prev" aria-label="前のカード">←</button>
+        <span class="fc-count">${idx+1} / ${list.length}</span>
+        <button class="btn" data-act="card-next" aria-label="次のカード">→</button>
+      </div>
+      <div class="fc-actions">
+        <button class="btn btn-sm ${weak?"btn-vermilion":""}" data-act="card-mark">${weak?"苦手から外す":"苦手に登録"}</button>
+        <button class="btn btn-sm btn-ghost" data-act="card-again">最初から</button>
+      </div>
+      <div class="small muted center mt16">${weakN? `苦手登録 ${weakN}枚。受験前日に「苦手のみ」で見直すのがおすすめです。`:"気になる用語は「苦手に登録」しておくと、直前にまとめて見返せます。"}</div>
+    </div>`
+    : `<div class="empty mt16"><span class="em-ico">🗂️</span>条件に合うカードがありません</div>`}
+  `, after(){}};
+};
+
+act("card-field", el=>{ cardState.field=el.dataset.field; cardState.idx=0; cardState.flipped=false; cardState.order=null; cardState.weakOnly=false; render(); });
+act("card-flip", ()=>{ cardState.flipped=!cardState.flipped; render(); });
+act("card-next", ()=>{ const l=cardList(); cardState.idx=(cardState.idx+1)%Math.max(1,l.length); cardState.flipped=false; render(); });
+act("card-prev", ()=>{ const l=cardList(); cardState.idx=(cardState.idx-1+Math.max(1,l.length))%Math.max(1,l.length); cardState.flipped=false; render(); });
+act("card-mark", ()=>{
+  const l=cardList(); const c=l[cardState.idx]; if(!c) return;
+  if(ST.cardWeak[c.id]) delete ST.cardWeak[c.id];
+  else ST.cardWeak[c.id]=1;
+  save(true); render();
+});
+act("card-weak-only", ()=>{ cardState.weakOnly=!cardState.weakOnly; cardState.idx=0; cardState.flipped=false; cardState.order=null; render(); });
+act("card-shuffle", ()=>{
+  const l=cardList(); cardState.order=shuffle(l.map(t=>t.id)); cardState.idx=0; cardState.flipped=false; render(); toast("シャッフルしました");
+});
+act("card-again", ()=>{ cardState.idx=0; cardState.flipped=false; render(); });
+
+/* =========================================================================
+   ビュー：設定 / 問題管理
+   ========================================================================= */
+let manageTab = "settings";
+let qFilter = {field:"all", q:"", tab:"all"};
+
+VIEWS.manage = function(){
+  const s = ST.settings;
+  const base = baseQuestions();
+  const custom = ST.custom||[];
+  const hiddenN = (ST.hidden||[]).length;
+  const editedN = Object.keys(ST.edits||{}).length;
+
+  const tabs = `
+    <div class="tabs">
+      <button class="${manageTab==="settings"?"on":""}" data-act="manage-tab" data-tab="settings">学習の設定</button>
+      <button class="${manageTab==="questions"?"on":""}" data-act="manage-tab" data-tab="questions">問題管理</button>
+      <button class="${manageTab==="data"?"on":""}" data-act="manage-tab" data-tab="data">データ</button>
+    </div>`;
+
+  if(manageTab==="settings"){
+    return {html:`
+      <div class="page-head"><div><div class="eyebrow">Settings</div><h1>設定・問題管理</h1></div></div>
+      ${tabs}
+      <section class="card">
+        <div class="card-title">受験日と学習ペース</div>
+        <div class="inline-fields">
+          <div class="field"><label for="set-exam">受験予定日</label>
+            <input class="inp" type="date" id="set-exam" value="${s.examDate||""}" data-act="set-exam"></div>
+          <div class="field"><label for="set-min">1日の学習時間（分）</label>
+            <input class="inp" type="number" id="set-min" min="10" max="240" step="5" value="${s.minutesPerDay}" data-act="set-min"></div>
+          <div class="field"><label for="set-target">目標正答率（%）</label>
+            <input class="inp" type="number" id="set-target" min="50" max="100" step="5" value="${s.targetRate}" data-act="set-target"></div>
+        </div>
+        <div class="field" style="margin-bottom:4px">
+          <label>学習する曜日</label>
+          <div class="chip-row">
+            ${WD.map((w,i)=>`<button class="chip ${(s.weekdays||[]).includes(i)?"on":""}" data-act="toggle-weekday" data-wd="${i}">${w}</button>`).join("")}
+          </div>
+        </div>
+        <div class="small muted mt8">いまの設定：週${(s.weekdays||[]).length}日 ／ 1日 ${s.minutesPerDay}分 ／ 受験日 ${s.examDate||"未設定"}</div>
+        <div class="note-box mt16">
+          <b>この設定から計画を作ります。</b>受験日までの残り日数と学習曜日から学習日を数え、分野別の正答率に応じて苦手分野の比重を上げて日々のタスクを組み直します。
+          設定を変えるとロードマップは自動で更新されます（完了チェックは日付ごとに保持されます）。
+        </div>
+      </section>
+      <section class="card">
+        <div class="card-title">ペースのめやす</div>
+        <div class="stat-row">
+          <div class="stat"><span class="lbl">週の学習時間</span><span class="val">${(s.weekdays||[]).length * s.minutesPerDay / 60}<small>h</small></span></div>
+          <div class="stat"><span class="lbl">残り学習日</span><span class="val">${buildPlan().n}<small>日</small></span></div>
+          <div class="stat"><span class="lbl">総学習時間（見込）</span><span class="val">${Math.round(buildPlan().n * s.minutesPerDay / 60)}<small>h</small></span></div>
+        </div>
+        <div class="small muted mt16">ITパスポートは「1日1時間・週4日」でおよそ1か月が一つの目安です。残り日数が少ない場合は、1日の時間を増やすか学習曜日を増やしてください。</div>
+      </section>`};
+  }
+
+  if(manageTab==="questions"){
+    let list = allQuestions();
+    if(qFilter.field!=="all") list = list.filter(q=>fieldOf(q)===qFilter.field);
+    if(qFilter.tab==="custom") list = list.filter(q=>String(q.id).startsWith("U"));
+    if(qFilter.tab==="past") list = list.filter(q=>q.p);
+    if(qFilter.q){
+      const kw=qFilter.q.toLowerCase();
+      list = list.filter(q=> (q.q+" "+q.e+" "+q.mid+" "+q.sub+" "+q.c.join(" ")).toLowerCase().includes(kw));
+    }
+    return {html:`
+      <div class="page-head"><div><div class="eyebrow">Questions</div><h1>設定・問題管理</h1></div></div>
+      ${tabs}
+      <section class="card tight">
+        <div class="between">
+          <div class="chip-row">
+            <button class="chip ${qFilter.tab==="all"?"on":""}" data-act="q-tab" data-tab="all">すべて ${allQuestions().length}</button>
+            <button class="chip ${qFilter.tab==="past"?"on":""}" data-act="q-tab" data-tab="past">過去問ベース ${allQuestions().filter(q=>q.p).length}</button>
+            <button class="chip ${qFilter.tab==="custom"?"on":""}" data-act="q-tab" data-tab="custom">自作 ${custom.length}</button>
+          </div>
+          <button class="btn btn-primary btn-sm" data-act="new-question">＋ 問題を追加</button>
+        </div>
+        <div class="flex mt8" style="gap:8px">
+          <input class="inp" style="flex:1;min-width:140px" placeholder="キーワードで絞り込む" value="${esc(qFilter.q)}" data-act="q-search" id="q-search">
+          <select class="inp" style="width:auto" data-act="q-field">
+            <option value="all"${qFilter.field==="all"?" selected":""}>全分野</option>
+            ${FIELD_KEYS.map(f=>`<option value="${f}"${qFilter.field===f?" selected":""}>${FIELDS[f].short}</option>`).join("")}
+          </select>
+        </div>
+      </section>
+      <div class="small muted mt16 mb8">${list.length}問を表示 ／ 自作${custom.length}問・編集${editedN}問・非表示${hiddenN}問</div>
+      ${list.length? list.map(q=>`
+        <div class="qbank-item">
+          <div class="qb-q" style="font-size:13px;line-height:1.7">${esc(q.q)}</div>
+          <div class="between mt8" style="gap:8px">
+            <div class="qb-meta" style="margin-top:0">
+              ${pillField(fieldOf(q))}
+              <span class="pill">${esc(q.mid||"")}</span>
+              <span class="pill">${esc(q.sub||"")}</span>
+              ${q.p?`<span class="pill past">過去問</span>`:""}
+              ${q._edited?`<span class="pill ok">編集済</span>`:""}
+              ${String(q.id).startsWith("U")?`<span class="pill">自作</span>`:""}
+            </div>
+            <div class="flex" style="gap:6px">
+              <button class="btn btn-sm" data-act="edit-question" data-id="${q.id}">編集</button>
+              <button class="btn btn-sm btn-ghost" style="color:var(--vermilion)" data-act="ask-hide-question" data-id="${q.id}">非表示</button>
+            </div>
+          </div>
+        </div>`).join("")
+      : `<div class="empty"><span class="em-ico">🔍</span>該当する問題がありません</div>`}
+      ${hiddenN? `<div class="note-box mt16">非表示にした問題が ${hiddenN}問あります。<button class="btn btn-sm mt8" data-act="restore-hidden">すべて元に戻す</button></div>`:""}
+    `};
+  }
+
+  // data
+  return {html:`
+    <div class="page-head"><div><div class="eyebrow">Data</div><h1>設定・問題管理</h1></div></div>
+    ${tabs}
+    <section class="card">
+      <div class="card-title">記録の持ち出し・取り込み</div>
+      <p class="small muted">学習記録・ロードマップ・自作問題は、この端末のブラウザ（localStorage）に保存されています。機種変更やバックアップには書き出しをご利用ください。</p>
+      <div class="btn-row">
+        <button class="btn" data-act="export-data">JSONで書き出す</button>
+        <button class="btn" data-act="import-data">JSONを読み込む</button>
+        <input type="file" id="import-file" accept=".json,application/json" style="display:none" data-act="import-file">
+      </div>
+      <hr class="hr-dash">
+      <div class="card-title" style="font-size:14px">保存されている内容</div>
+      <div class="stat-row">
+        <div class="stat"><span class="lbl">セッション</span><span class="val">${(ST.history||[]).length}<small>件</small></span></div>
+        <div class="stat"><span class="lbl">自作問題</span><span class="val">${custom.length}<small>問</small></span></div>
+        <div class="stat"><span class="lbl">ロードマップ</span><span class="val">${Object.keys(ST.roadmap||{}).filter(k=>ST.roadmap[k]).length}<small>日</small></span></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-title">問題データの初期化</div>
+      <div class="flex">
+        <button class="btn btn-sm" data-act="reset-edits">組み込み問題の編集を元に戻す</button>
+        <button class="btn btn-sm" data-act="ask-clear-custom">自作問題をすべて削除</button>
+      </div>
+      <hr class="hr-dash">
+      <div class="card-title" style="font-size:14px;color:var(--vermilion)">すべてのデータを削除</div>
+      <p class="small muted">学習履歴・設定・自作問題・用語カードの苦手登録を含め、この端末の記録をすべて消します。</p>
+      <button class="btn btn-vermilion btn-sm" data-act="ask-reset-all">すべてのデータを削除する</button>
+    </section>
+
+    <section class="card">
+      <div class="card-title">このアプリについて</div>
+      <p class="small" style="line-height:1.9">
+        ITパスポート学習ノート — 1つのHTMLファイルで完結するオフライン学習アプリです。<br>
+        収録問題は、ITパスポート試験の出題範囲（ストラテジ系／マネジメント系／テクノロジ系）に沿って作成したサンプルです。
+        「過去問ベース」のラベルが付いた問題は、公表されている過去問の論点を参考に再構成したもので、実際の出題文そのものではありません。
+        受験前には必ず公式の過去問題集やIPAの公開問題で最終確認してください。
+      </p>
+    </section>`};
+};
+
+act("manage-tab", el=>{ manageTab=el.dataset.tab; render(); });
+act("toggle-weekday", el=>{
+  const wd=+el.dataset.wd;
+  let arr=(ST.settings.weekdays||[]).slice();
+  if(arr.includes(wd)) arr=arr.filter(x=>x!==wd); else arr.push(wd);
+  arr.sort((a,b)=>a-b);
+  if(!arr.length){ toast("1日以上選んでください"); return; }
+  ST.settings.weekdays=arr; save(true); render();
+});
+act("q-tab", el=>{ qFilter.tab=el.dataset.tab; render(); });
+act("q-field", el=>{ qFilter.field=el.value; render(); });
+
+document.addEventListener("input", e=>{
+  const t=e.target;
+  if(t.dataset && t.dataset.act==="set-exam"){ ST.settings.examDate=t.value; save(); paintChrome(); }
+  if(t.dataset && t.dataset.act==="set-min"){ ST.settings.minutesPerDay=clamp(+t.value||60,10,240); save(); }
+  if(t.dataset && t.dataset.act==="set-target"){ ST.settings.targetRate=clamp(+t.value||70,50,100); save(); }
+  if(t.dataset && t.dataset.act==="q-search"){ qFilter.q=t.value; debounceSearch(); }
+  if(t.id==="import-file"){ /* handled by change */ }
+});
+let searchTimer=null;
+function debounceSearch(){ if(searchTimer) clearTimeout(searchTimer); searchTimer=setTimeout(()=>{ const v=qFilter.q; render(); const el=$("#q-search"); if(el){ el.focus(); el.setSelectionRange(v.length,v.length);} },320); }
+
+/* ---- 問題の追加・編集 ---- */
+function questionForm(q){
+  const isNew = !q;
+  const d = q || {id:"", field:"strategy", mid:"", sub:"", q:"", c:["","","",""], a:0, e:"", pt:"", p:false, y:""};
+  const midList = Array.from(new Set(allQuestions().filter(x=>x.mid).map(x=>x.mid)));
+  return `<h3 id="modal-title">${isNew?"問題を追加":"問題を編集"}</h3>
+    <div class="m-sub">${isNew?"自作の問題が演習・模擬試験に加わります。":"編集内容はこの端末にのみ保存されます。"}</div>
+    <div class="inline-fields">
+      <div class="field"><label>分野</label>
+        <select class="inp" id="f-field">
+          ${FIELD_KEYS.map(f=>`<option value="${f}"${d.field===f?" selected":""}>${FIELDS[f].name}</option>`).join("")}
+        </select></div>
+      <div class="field"><label>中分類（例：システム監査）</label>
+        <input class="inp" id="f-mid" list="mid-list" value="${esc(d.mid||"")}" placeholder="企業活動 / システム監査 など">
+        <datalist id="mid-list">${midList.map(m=>`<option value="${esc(m)}"></option>`).join("")}</datalist></div>
+      <div class="field"><label>小分類（例：システム監査）</label>
+        <input class="inp" id="f-sub" value="${esc(d.sub||"")}" placeholder="分析に使う細かい科目名"></div>
+    </div>
+    <div class="field"><label>問題文</label>
+      <textarea class="inp" id="f-q" rows="3" placeholder="〜として、最も適切なものはどれか。">${esc(d.q)}</textarea></div>
+    <div class="field"><label>選択肢（正解を選んでください）</label>
+      ${CHOICE_MARKS.map((m,i)=>`
+        <div class="flex" style="margin-bottom:6px;gap:8px;flex-wrap:nowrap">
+          <label class="chk-line" style="gap:5px"><input type="radio" name="f-ans" value="${i}" ${d.a===i?"checked":""}><span>${m}</span></label>
+          <input class="inp" id="f-c${i}" value="${esc(d.c[i]||"")}" placeholder="選択肢${m}">
+        </div>`).join("")}
+    </div>
+    <div class="field"><label>解説</label>
+      <textarea class="inp" id="f-e" rows="3" placeholder="なぜその選択肢が正解なのか、他の選択肢が誤りである理由も書くと復習に効きます。">${esc(d.e||"")}</textarea></div>
+    <div class="inline-fields">
+      <div class="field"><label>暗記ポイント（任意）</label>
+        <input class="inp" id="f-pt" value="${esc(d.pt||"")}" placeholder="例：損益分岐点＝固定費÷限界利益率"></div>
+      <div class="field"><label>出題年度（任意）</label>
+        <input class="inp" id="f-y" value="${esc(d.y||"")}" placeholder="2024"></div>
+    </div>
+    <label class="chk-line"><input type="checkbox" id="f-past" ${d.p?"checked":""}> 過去問をベースにした問題（一覧にラベルが付きます）</label>
+    <div class="modal-foot">
+      <button class="btn" data-act="close-modal">キャンセル</button>
+      <button class="btn btn-primary" data-act="save-question" data-id="${d.id||""}">保存する</button>
+    </div>`;
+}
+act("new-question", ()=>openModal(questionForm(null), {after(m){ m.querySelector("#f-q").focus(); }}));
+act("edit-question", el=>{
+  const q = allQuestions().find(x=>x.id===el.dataset.id) || qById(el.dataset.id);
+  if(!q) return;
+  openModal(questionForm(q), {after(m){ m.querySelector("#f-q").focus(); }});
+});
+act("save-question", el=>{
+  const id = el.dataset.id;
+  const field = $("#f-field").value;
+  const mid = $("#f-mid").value.trim();
+  const sub = $("#f-sub").value.trim();
+  const qt = $("#f-q").value.trim();
+  const cs = [0,1,2,3].map(i=>$("#f-c"+i).value.trim());
+  const ansEl = document.querySelector('input[name="f-ans"]:checked');
+  const a = ansEl? +ansEl.value : 0;
+  const e = $("#f-e").value.trim();
+  const pt = $("#f-pt").value.trim();
+  const y = $("#f-y").value.trim();
+  const p = $("#f-past").checked;
+  if(!qt){ toast("問題文を入力してください"); return; }
+  if(cs.some(c=>!c)){ toast("選択肢を4つすべて入力してください"); return; }
+  if(!mid){ toast("中分類を入力してください（分析に使います）"); return; }
+  if(id && String(id).startsWith("U")){
+    const i = ST.custom.findIndex(x=>x.id===id);
+    if(i>=0) ST.custom[i] = Object.assign({}, ST.custom[i], {field,mid,sub:sub||mid,q:qt,c:cs,a,e,pt,y:p?y:""});
+  } else if(id){
+    ST.edits[id] = {field,mid,sub:sub||mid,q:qt,c:cs,a,e,pt,p,y:p?y:undefined};
+    // 元の問題に p フラグが無い場合に備える
+    if(p) ST.edits[id].p = true;
+  } else {
+    const nq = {id:uid("U"), field, mid, sub:sub||mid, q:qt, c:cs, a, e, pt:pt||"", p:!!p, y:p?y:""};
+    ST.custom = (ST.custom||[]).concat([nq]);
+  }
+  save(true); closeModal(); toast("保存しました"); render();
+});
+act("ask-hide-question", el=>{
+  const id=el.dataset.id;
+  openModal(`<h3 id="modal-title">この問題を非表示にしますか？</h3>
+    <p class="m-sub">出題されなくなります。あとから元に戻せます。</p>
+    <div class="modal-foot"><button class="btn" data-act="close-modal">やめる</button>
+    <button class="btn btn-vermilion" data-act="hide-question" data-id="${id}">非表示にする</button></div>`);
+});
+act("hide-question", el=>{
+  ST.hidden = (ST.hidden||[]).concat([el.dataset.id]);
+  save(true); closeModal(); toast("非表示にしました"); render();
+});
+act("restore-hidden", ()=>{ ST.hidden=[]; save(true); toast("すべて元に戻しました"); render(); });
+act("reset-edits", ()=>{ ST.edits={}; save(true); toast("組み込み問題を元に戻しました"); render(); });
+act("ask-clear-custom", ()=>{
+  openModal(`<h3 id="modal-title">自作問題をすべて削除しますか？</h3>
+    <p class="m-sub">${(ST.custom||[]).length}問を削除します。この操作は取り消せません。</p>
+    <div class="modal-foot"><button class="btn" data-act="close-modal">やめる</button>
+    <button class="btn btn-vermilion" data-act="clear-custom">削除する</button></div>`);
+});
+act("clear-custom", ()=>{ ST.custom=[]; save(true); closeModal(); toast("自作問題を削除しました"); render(); });
+act("ask-reset-all", ()=>{
+  openModal(`<h3 id="modal-title">すべてのデータを削除しますか？</h3>
+    <p class="m-sub">学習履歴・設定・自作問題・苦手登録がすべて消えます。元に戻せません。</p>
+    <div class="modal-foot"><button class="btn" data-act="close-modal">やめる</button>
+    <button class="btn btn-vermilion" data-act="reset-all">すべて削除</button></div>`);
+});
+act("reset-all", ()=>{
+  try{ localStorage.removeItem(KEY); }catch(e){}
+  loadState(); save(true); closeModal(); toast("初期状態に戻しました"); navigate("home");
+});
+
+/* ---- エクスポート / インポート ---- */
+act("export-data", ()=>{
+  const data = JSON.stringify({app:"itp-notebook", exportedAt:new Date().toISOString(), state:ST}, null, 2);
+  const blob = new Blob([data], {type:"application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href=url; a.download=`itp-notebook-${dayKey(today())}.json`;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url), 3000);
+  toast("書き出しました");
+});
+act("import-data", ()=>{ const f=$("#import-file"); if(f) f.click(); });
+document.addEventListener("change", e=>{
+  if(e.target.id!=="import-file") return;
+  const file = e.target.files && e.target.files[0];
+  if(!file) return;
+  const rd = new FileReader();
+  rd.onload = ()=>{
+    try{
+      const obj = JSON.parse(rd.result);
+      const st = obj.state || obj;
+      if(!st || typeof st!=="object") throw new Error("形式が違います");
+      ST = deepFill(DEFAULT_STATE, st);
+      ST.session = null;
+      save(true); render(); toast("読み込みました");
+      navigate("home");
+    }catch(err){ toast("読み込みに失敗しました"); }
+    e.target.value="";
+  };
+  rd.readAsText(file);
+});
+act("open-settings", ()=>{ manageTab="settings"; navigate("manage"); });
+
+/* =========================================================================
+   起動処理 / グローバルイベント
+   ========================================================================= */
+let lastRenderAt = 0;
+function render(){
+  const name = ROUTES[currentRoute] ? currentRoute : "home";
+  const v = VIEWS[name];
+  paintChrome();
+  const host = $("#view");
+  if(!v){ host.innerHTML = `<div class="empty">ページが見つかりません</div>`; return; }
+  const out = v(routeParam) || {html:""};
+  host.innerHTML = out.html;
+  if(typeof out.after === "function"){
+    try{ out.after(); }catch(e){ console.warn(e); }
+  }
+  lastRenderAt = Date.now();
+  // フォーカスを本文へ（スクリーンリーダー向け）
+  if(name!=="quiz"){ host.focus({preventScroll:true}); }
+}
+
+/* キーボード操作（出題中） */
+document.addEventListener("keydown", e=>{
+  if(currentRoute!=="quiz") return;
+  if(e.target.tagName==="INPUT" || e.target.tagName==="TEXTAREA" || e.target.tagName==="SELECT") return;
+  const s = ST.session; if(!s) return;
+  const q = qById(s.qids[s.idx]); if(!q) return;
+  const ans = s.answers[s.idx];
+  const locked = !!(ans && ans.locked);
+  const key = e.key.toLowerCase();
+  if(!locked && s.mode!=="exam"){
+    const map = {a:0,b:1,c:2,d:3,"1":0,"2":1,"3":2,"4":3};
+    if(key in map){ e.preventDefault(); applyChoice(map[key]); return; }
+  }
+  if(e.key==="Enter" || e.key==="ArrowRight"){
+    if(locked){ e.preventDefault(); ACT["next-q"](); }
+    else if(s.mode==="exam" && ans){ e.preventDefault(); ACT["next-q"](); }
+  }
+  if(e.key==="ArrowLeft" && s.idx>0){ e.preventDefault(); ACT["prev-q"](); }
+});
+
+/* 画面復帰時にカウントダウンや制限時間を再確認 */
+document.addEventListener("visibilitychange", ()=>{
+  if(document.visibilityState==="visible" && currentRoute==="quiz" && ST.session && ST.session.mode==="exam"){
+    updateTimer();
+  }
+});
+
+/* ハッシュルーティング */
+window.addEventListener("hashchange", onHashChange);
+window.addEventListener("beforeunload", ()=>{ save(true); });
+
+/* 初期化 */
+(function boot(){
+  loadState();
+  if(!location.hash) location.replace("#/home");
+  onHashChange();
+  save(true);
+
+  // 初回のみ軽い案内
+  if(!ST.history.length && !sessionStorage.getItem("itp_welcomed")){
+    sessionStorage.setItem("itp_welcomed","1");
+    setTimeout(()=>{
+      openModal(`<h3 id="modal-title">ようこそ、学習ノートへ</h3>
+        <p class="m-sub">はじめに、受験日と学習ペースを確認しましょう。</p>
+        <div class="note-box mb16">いまは <b>2026年11月12日</b> を受験予定日、<b>1日60分 × 週4日（火・木・土・日）</b> として計画を作っています。違う場合は設定から変更できます。</div>
+        <ol class="small" style="padding-left:1.2em;line-height:2;margin:0">
+          <li>まず「10問だけ演習」で現在地を確認</li>
+          <li>結果画面で分野別・小分類別の弱点を見る</li>
+          <li>ロードマップの今日のタスクをこなす</li>
+          <li>誤答は「復習モード」で潰す</li>
+        </ol>
+        <div class="modal-foot">
+          <button class="btn" data-act="close-modal">閉じる</button>
+          <button class="btn btn-primary" data-act="welcome-start">10問はじめる</button>
+        </div>`, {after(m){
+          const b=m.querySelector('[data-act="welcome-start"]');
+          if(b) b.addEventListener("click", ()=>{ closeModal(); startSession({mode:"practice",count:10}); });
+        }});
+    }, 450);
+  }
+})();
+
+</script>
+</body>
+</html>
