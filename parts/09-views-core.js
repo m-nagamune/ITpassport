@@ -211,6 +211,7 @@ VIEWS.practice = function(){
   const past = {strategy:0,management:0,technology:0};
   allQuestions().forEach(q=>{ counts[fieldOf(q)]++; if(q.p) past[fieldOf(q)]++; });
   const totalQ = allQuestions().length;
+  const customN = (ST.custom||[]).filter(q=>!(ST.hidden||[]).includes(q.id)).length;
   const acc = accuracyByField();
 
   return {html:`
@@ -261,9 +262,26 @@ VIEWS.practice = function(){
       </div>
     </section>
 
+    <section class="card" style="margin-top:16px">
+      <div class="between">
+        <div style="min-width:220px">
+          <div style="font-weight:700;font-size:13.5px">問題は自分で追加できます</div>
+          <div class="small muted" style="line-height:1.7">
+            いま収録 <b>${totalQ}問</b>（うち自作 ${customN}問）。手持ちの過去問やテキストを、
+            1問ずつ・まとめて貼り付けのどちらでも追加できます。
+          </div>
+        </div>
+        <div class="flex">
+          <button class="btn btn-sm" data-act="new-question">＋ 1問ずつ追加</button>
+          <button class="btn btn-sm btn-primary" data-act="bulk-questions">まとめて追加（貼り付け）</button>
+        </div>
+      </div>
+    </section>
+
     <div class="note-box">
       <b>使い方：</b>まず10問解いてみて、結果画面で分野別の弱点を確認。誤答は自動的に「復習モード」にたまります。
-      解説を読んだら、関連する用語カードをめくると定着しやすくなります。
+      解説を読んだら、関連する用語カードをめくると定着しやすくなります。<br>
+      <b>わからない問題は：</b>当てずっぽうで選ばず「わからない」を押してください。不正解として集計し、復習対象に残します。
     </div>
   `, after(){}};
 };
@@ -366,24 +384,34 @@ VIEWS.quiz = function(){
   const locked = !!(ans && ans.locked);
   const total = s.qids.length;
 
+  const isUnsure = !!(ans && ans.unsure);
+
   const track = s.qids.map((_,i)=>{
     const a = s.answers[i];
     let cls = "";
-    if(a && (a.locked || (a.ok!==undefined && !isExam))) cls = a.ok? "ok":"ng";
+    if(a && (a.locked || (a.ok!==undefined && !isExam))) cls = (a.unsure || a.pick==null) ? "unk" : (a.ok? "ok":"ng");
     else if(i===qi) cls="now";
     return `<i class="${cls}"></i>`;
   }).join("");
 
   const choices = q.c.map((txt,i)=>{
     let cls="";
-    if(ans && ans.pick===i) cls+=" sel";
-    if(locked){ if(i===q.a) cls=" correct"; else if(ans.pick===i) cls=" wrong"; }
-    const mk = locked ? (i===q.a? '<span class="mk">正解</span>' : (ans.pick===i? '<span class="mk">あなたの解答</span>':"")) : "";
-    return `<li><button class="choice${cls}" data-act="choose" data-i="${i}" ${locked||(isExam&&false)?"disabled":""}>
+    if(ans && ans.pick===i && !isUnsure) cls+=" sel";
+    if(locked){ if(i===q.a) cls=" correct"; else if(ans.pick===i && !isUnsure) cls=" wrong"; }
+    const mk = locked ? (i===q.a? '<span class="mk">正解</span>' : (ans.pick===i && !isUnsure? '<span class="mk">あなたの解答</span>':"")) : "";
+    return `<li><button class="choice${cls}" data-act="choose" data-i="${i}" ${locked?"disabled":""}>
       <span class="k">${CHOICE_MARKS[i]}</span><span>${esc(txt)}</span>${mk}</button></li>`;
   }).join("");
 
-  const explain = locked ? `
+  const explain = locked ? (isUnsure ? `
+    <div class="explain">
+      <div class="ex-head">
+        <span class="res" style="color:#5b564c">— わからない（不正解として記録）</span>
+      </div>
+      <div class="m-sub" style="margin:2px 0 8px">正解は「${CHOICE_MARKS[q.a]}」です。当てずっぽうで正解にしても実力は測れないので、未解答として集計し、復習対象に残しています。</div>
+      <p>${esc(q.e||"")}</p>
+      ${q.pt?`<div class="point"><b>暗記：</b>${esc(q.pt)}</div>`:""}
+    </div>` : `
     <div class="explain">
       <div class="ex-head">
         <span class="res ${ans.ok?"":"wrong"}" style="color:${ans.ok?"#2f6b3a":"#9c4526"}">${ans.ok? "○ 正解":"× 不正解"}</span>
@@ -391,12 +419,16 @@ VIEWS.quiz = function(){
       </div>
       <p>${esc(q.e||"")}</p>
       ${q.pt?`<div class="point"><b>暗記：</b>${esc(q.pt)}</div>`:""}
-    </div>` : "";
+    </div>`) : "";
+
+  /* 未解答（わからない）を押せるボタン。模擬試験でも押せるが、あとから変更できる */
+  const unsureState = isUnsure ? " on" : "";
+  const unsureBtn = `<button class="btn btn-sm btn-unsure${unsureState}" data-act="mark-unsure" ${locked?"disabled":""}>わからない<span class="small muted" style="font-weight:400">（未解答で記録）</span></button>`;
 
   const isLast = qi===total-1;
   const footer = locked ? `
       <div class="quiz-foot">
-        <span class="kbd-hint">キー操作：A〜D で解答 ／ Enter で次へ</span>
+        <span class="kbd-hint">キー操作：A〜D で解答 ／ E で「わからない」 ／ Enter で次へ</span>
         <span class="spacer"></span>
         ${qi>0? `<button class="btn" data-act="prev-q">← 前の問題</button>`:""}
         <button class="btn btn-primary" data-act="next-q">${isLast? "結果を見る":"次の問題 →"}</button>
@@ -404,10 +436,17 @@ VIEWS.quiz = function(){
       <div class="quiz-foot">
         <span class="kbd-hint">解答を選んで「次へ」。あとで戻って変更できます。</span>
         <span class="spacer"></span>
+        ${unsureBtn}
         ${qi>0? `<button class="btn" data-act="prev-q">← 前へ</button>`:""}
         ${isLast? `<button class="btn btn-vermilion" data-act="finish-exam">採点する</button>`
                  : `<button class="btn btn-primary" data-act="next-q">次へ →</button>`}
-      </div>` : `<div class="quiz-foot"><span class="kbd-hint">選択肢をタップすると解答します</span></div>`);
+      </div>` : `
+      <div class="quiz-foot">
+        <span class="kbd-hint">A〜D で解答 ／ E で「わからない」で次へ</span>
+        <span class="spacer"></span>
+        ${unsureBtn}
+        ${qi>0? `<button class="btn" data-act="prev-q">← 前へ</button>`:""}
+      </div>`);
 
   const timerHTML = isExam ? `<span class="timer" id="quiz-timer">--:--</span>` : "";
 
@@ -460,18 +499,36 @@ function applyChoice(pick){
   const cur = s.answers[s.idx];
   if(cur && cur.locked) return;
   const ok = pick===q.a;
-  s.answers[s.idx] = {qid:q.id, pick, ok, ts:Date.now()};
+  s.answers[s.idx] = {qid:q.id, pick, ok, unsure:false, ts:Date.now()};
   if(s.mode!=="exam") s.answers[s.idx].locked = true;
   save();
   render();
   if(s.mode!=="exam"){ setTimeout(()=>{ const b=$(".q-card .explain"); if(b) b.scrollIntoView({block:"nearest",behavior:"smooth"}); },60); }
 }
 
+/* 「わからない」= 未解答のまま記録する（当てずっぽうの正解で集計が濁らないように） */
+function markUnsure(){
+  const s=ST.session; if(!s) return;
+  const q=qById(s.qids[s.idx]); if(!q) return;
+  const cur = s.answers[s.idx];
+  if(cur && cur.locked) return;
+  s.answers[s.idx] = {qid:q.id, pick:null, ok:false, unsure:true, ts:Date.now()};
+  if(s.mode!=="exam") s.answers[s.idx].locked = true;
+  save();
+  render();
+  if(s.mode!=="exam"){
+    setTimeout(()=>{ const b=$(".q-card .explain"); if(b) b.scrollIntoView({block:"nearest",behavior:"smooth"}); },60);
+  } else {
+    toast("「わからない」として記録しました");
+  }
+}
+
 act("choose", (el)=>{ applyChoice(+el.dataset.i); });
+act("mark-unsure", ()=>{ markUnsure(); });
 
 act("next-q", ()=>{
   const s=ST.session; if(!s) return;
-  if(s.answers[s.idx]===null){ toast("選択肢を選んでください"); return; }
+  if(s.answers[s.idx]===null){ toast("選択肢を選ぶか「わからない」を押してください"); return; }
   if(s.idx < s.qids.length-1){ s.idx++; save(true); render(); }
   else if(s.mode==="exam"){ confirmFinish(); }
   else { finishSession(false); }
@@ -481,8 +538,9 @@ act("finish-exam", ()=>confirmFinish());
 function confirmFinish(){
   const s=ST.session; if(!s) return;
   const un = s.answers.filter(a=>!a).length;
+  const unk = s.answers.filter(a=>a && a.unsure).length;
   openModal(`<h3 id="modal-title">採点しますか？</h3>
-    <p class="m-sub">${un? `未解答が ${un}問あります。`:"すべて解答済みです。"}採点するとこのセッションは終了します。</p>
+    <p class="m-sub">${un? `未解答が ${un}問あります。`:""}${unk? `「わからない」が ${unk}問あります。`:""}${(!un&&!unk)? "すべて解答済みです。":""}採点するとこのセッションは終了します。</p>
     <div class="modal-foot"><button class="btn" data-act="close-modal">戻る</button>
     <button class="btn btn-vermilion" data-act="do-finish">採点する</button></div>`);
 }
@@ -494,12 +552,14 @@ function finishSession(timeup){
   stopTimer();
   const answers = s.qids.map((qid,i)=>{
     const a = s.answers[i] || {qid, pick:null, ok:false, ts:Date.now()};
-    return {qid, pick:a.pick, ok:!!a.ok, ts:a.ts||Date.now()};
+    return {qid, pick:(a.pick==null?null:a.pick), ok:!!a.ok, unsure:!!a.unsure, ts:a.ts||Date.now()};
   });
   const correct = answers.filter(a=>a.ok).length;
+  const unsureN = answers.filter(a=>a.unsure).length;
+  const blankN = answers.filter(a=>!a.unsure && a.pick==null).length;
   const rec = {
     id: s.id, ts: Date.now(), mode: s.mode, field: s.field,
-    count: answers.length, correct,
+    count: answers.length, correct, unsure:unsureN, blank:blankN,
     rate: Math.round(correct/answers.length*100),
     sec: Math.round((Date.now()-s.startTs)/1000),
     timeup: !!timeup,
@@ -539,6 +599,9 @@ VIEWS.result = function(param){
   const weakSubs = subs.filter(o=>o.rate<70);
   const pass = rec.rate>=70;
   const wrongIds = rec.answers.filter(a=>!a.ok).map(a=>a.qid);
+  const unsureIds = rec.answers.filter(a=>a.unsure || (!a.ok && a.pick==null)).map(a=>a.qid);
+  const wrongOnlyIds = rec.answers.filter(a=>!a.ok && !(a.unsure || a.pick==null)).map(a=>a.qid);
+  const unsureN = rec.answers.filter(a=>a.unsure || (!a.ok && a.pick==null)).length;
   const modeName = rec.mode==="exam"?"模擬試験":(rec.mode==="review"?"復習モード":"通常演習");
   const verdict = rec.mode==="exam"
       ? (rec.rate>=70? "合格ライン到達（目安）" : rec.rate>=60? "あと一歩。弱点を補強しましょう":"基礎の積み直しが必要です")
@@ -556,9 +619,12 @@ VIEWS.result = function(param){
         ${ringSVG(rec.rate)}
         <div style="flex:1;min-width:200px">
           <div class="result-verdict ${pass?"pass":(rec.rate>=60?"near":"fail")}">${verdict}</div>
-          <div class="small muted mb8">${modeName} ・ ${rec.count}問 ・ 正解 ${rec.correct}問 ・ 所要 ${fmtTime(rec.sec)}${rec.timeup?"（時間切れ）":""}</div>
+          <div class="small muted mb8">${modeName} ・ ${rec.count}問 ・ 正解 ${rec.correct}問${unsureN?` ・ <b>わからない ${unsureN}問</b>`:""} ・ 所要 ${fmtTime(rec.sec)}${rec.timeup?"（時間切れ）":""}</div>
+          ${unsureN? `<div class="small muted mb8">「わからない」は不正解として、正答率の分母（${rec.count}問）に含めています。</div>`:""}
           <div class="flex">
             ${wrongIds.length? `<button class="btn btn-primary btn-sm" data-act="retry-wrong" data-ids="${wrongIds.join(",")}">間違えた${wrongIds.length}問を解き直す</button>`:""}
+            ${wrongOnlyIds.length? `<button class="btn btn-sm" data-act="retry-wrong" data-ids="${wrongOnlyIds.join(",")}">誤答だけ (${wrongOnlyIds.length})</button>`:""}
+            ${unsureIds.length? `<button class="btn btn-sm" data-act="retry-wrong" data-ids="${unsureIds.join(",")}">わからない (${unsureIds.length})</button>`:""}
             <button class="btn btn-sm" data-act="start-quick" data-field="all" data-count="10">もう一度10問</button>
             <a class="btn btn-sm" href="#/analysis">分析を見る</a>
           </div>
@@ -594,13 +660,18 @@ VIEWS.result = function(param){
       <div id="result-list">
         ${rec.answers.map((a,i)=>{
           const q=qById(a.qid); if(!q) return "";
-          return `<div class="qbank-item" style="border-left:3px solid ${a.ok?"#7fae86":"#d9a08a"}">
+          const unk = !!(a.unsure || (!a.ok && a.pick==null));
+          const side = a.ok? "#7fae86" : (unk? "#b3ab99" : "#d9a08a");
+          const badge = a.ok? `<span class="pill ok">正解</span>`
+            : unk? `<span class="pill unk">わからない（正解 ${CHOICE_MARKS[q.a]}）</span>`
+            : `<span class="pill ng">誤答（正解 ${CHOICE_MARKS[q.a]}）</span>`;
+          return `<div class="qbank-item" style="border-left:3px solid ${side}">
             <div class="between" style="gap:8px">
-              <div class="qb-q" style="font-size:12.5px;${a.ok?"":"color:#7d4a33"}">${i+1}. ${esc(q.q)}</div>
-              <button class="btn btn-sm" data-act="show-answer" data-qid="${q.id}" data-pick="${a.pick==null?"":a.pick}">解説</button>
+              <div class="qb-q" style="font-size:12.5px;${a.ok?"":(unk?"color:#5b564c":"color:#7d4a33")}">${i+1}. ${esc(q.q)}</div>
+              <button class="btn btn-sm" data-act="show-answer" data-qid="${q.id}" data-pick="${a.pick==null?"":a.pick}" data-unsure="${unk?1:0}">解説</button>
             </div>
             <div class="qb-meta">${pillField(fieldOf(q))}<span class="pill">${esc(q.sub||"")}</span>
-              <span class="pill ${a.ok?"ok":"ng"}">${a.ok?"正解":`誤答（正解 ${CHOICE_MARKS[q.a]}）`}</span></div>
+              ${badge}</div>
           </div>`;
         }).join("")}
       </div>
@@ -624,13 +695,14 @@ act("retry-wrong", (el)=>{
 act("show-answer", (el)=>{
   const q=qById(el.dataset.qid); if(!q) return;
   const pick = el.dataset.pick===""? null : +el.dataset.pick;
+  const wasUnsure = el.dataset.unsure==="1";
   openModal(`<h3 id="modal-title">解説</h3>
-    <div class="m-sub">${esc(labelOf(q))}${q.p?` ・ 過去問ベース`:""}</div>
+    <div class="m-sub">${esc(labelOf(q))}${q.p?` ・ 過去問ベース`:""}${wasUnsure?` ・ わからない（未解答）`:""}</div>
     <p style="font-family:var(--serif);line-height:1.85;font-size:14.5px">${esc(q.q)}</p>
     <ul class="choices" style="margin-top:10px">
-      ${q.c.map((t,i)=>`<li><div class="choice ${i===q.a?"correct":(i===pick?"wrong":"")}" style="cursor:default">
+      ${q.c.map((t,i)=>`<li><div class="choice ${i===q.a?"correct":(i===pick && !wasUnsure?"wrong":"")}" style="cursor:default">
         <span class="k">${CHOICE_MARKS[i]}</span><span>${esc(t)}</span>
-        ${i===q.a?'<span class="mk">正解</span>':(i===pick?'<span class="mk">あなた</span>':"")}</div></li>`).join("")}
+        ${i===q.a?'<span class="mk">正解</span>':(i===pick && !wasUnsure?'<span class="mk">あなた</span>':"")}</div></li>`).join("")}
     </ul>
     <p class="small" style="margin-top:14px;line-height:1.9">${esc(q.e||"")}</p>
     ${q.pt?`<div class="point"><b>暗記：</b>${esc(q.pt)}</div>`:""}

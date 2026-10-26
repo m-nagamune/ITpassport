@@ -131,10 +131,14 @@ function weakQuestions(){
   allAttempts().sort((a,b)=>a.ts-b.ts).forEach(a=>{ last[a.qid]={ok:a.ok, ts:a.ts}; });
   return Object.keys(last).filter(k=>!last[k].ok).sort((a,b)=>last[b].ts-last[a].ts);
 }
+/* 未解答=「わからない」で記録した解答か（pick が null のものも未解答扱い） */
+function isUnsure(a){ return !!(a && (a.unsure || (a.pick==null && !a.ok))); }
 function overallStats(){
   const at=allAttempts();
   const c=at.filter(a=>a.ok).length;
-  return { total:at.length, correct:c, rate: at.length?Math.round(c/at.length*100):null,
+  const unk=at.filter(a=>isUnsure(a)).length;
+  return { total:at.length, correct:c, unsure:unk,
+           rate: at.length?Math.round(c/at.length*100):null,
            sessions:(ST.history||[]).length,
            studyDays: new Set((ST.history||[]).map(h=>dayKey(new Date(h.ts)))).size };
 }

@@ -80,6 +80,7 @@
 .progress-track i{flex:1;height:7px;border-radius:3px;background:var(--paper-3);border:1px solid rgba(0,0,0,.04);transition:background .3s}
 .progress-track i.ok{background:var(--accent)}
 .progress-track i.ng{background:var(--vermilion)}
+.progress-track i.unk{background:#a9a290}
 .progress-track i.now{background:#c7b78d}
 .quiz-meta{font-size:12px;color:var(--ink-soft);white-space:nowrap;font-variant-numeric:tabular-nums}
 .quiz-meta b{font-family:var(--serif);font-size:16px;color:var(--ink)}
@@ -126,6 +127,13 @@
 .quiz-foot .spacer{flex:1}
 .kbd-hint{font-size:11px;color:var(--ink-faint)}
 @media (max-width:700px){ .kbd-hint{display:none} }
+.btn-unsure{background:#efebe0;border-color:#cbc3b1;color:#5b564c}
+.btn-unsure:hover{background:#e8e3d6;border-color:#b9b09c}
+.unsure-note{
+  display:flex;align-items:flex-start;gap:8px;font-size:12px;line-height:1.75;color:#5b564c;
+  background:#f0ede3;border:1px dashed #cfc7b5;border-radius:9px;padding:9px 12px;margin:0 0 14px;
+}
+.unsure-note b{color:#403c33}
 
 /* ---------- 結果 ---------- */
 .score-panel{display:flex;gap:24px;align-items:center;flex-wrap:wrap}

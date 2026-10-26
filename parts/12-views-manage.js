@@ -74,6 +74,7 @@ VIEWS.manage = function(){
             <button class="chip ${qFilter.tab==="past"?"on":""}" data-act="q-tab" data-tab="past">過去問ベース ${allQuestions().filter(q=>q.p).length}</button>
             <button class="chip ${qFilter.tab==="custom"?"on":""}" data-act="q-tab" data-tab="custom">自作 ${custom.length}</button>
           </div>
+          <button class="btn btn-sm" data-act="bulk-questions">まとめて追加</button>
           <button class="btn btn-primary btn-sm" data-act="new-question">＋ 問題を追加</button>
         </div>
         <div class="flex mt8" style="gap:8px">
@@ -250,6 +251,157 @@ act("save-question", el=>{
     ST.custom = (ST.custom||[]).concat([nq]);
   }
   save(true); closeModal(); toast("保存しました"); render();
+});
+
+/* ---- まとめて追加（貼り付け / JSON） ---- */
+function bulkModal(){
+  return `<h3 id="modal-title">問題をまとめて追加</h3>
+    <div class="m-sub">テキストを貼り付けるか、JSONを読み込むと、まとめて自作問題に登録します。</div>
+    <div class="note-box mb16" style="font-size:12px">
+      <b>テキスト形式：</b>1問を空行で区切り、次の順に書きます。<br>
+      <code style="font-size:11.5px;line-height:1.9">分野|中分類|小分類<br>問題文<br>ア．選択肢1<br>イ．選択肢2<br>ウ．選択肢3<br>エ．選択肢4<br>正解=ア<br>解説（任意）</code>
+    </div>
+    <div class="field">
+      <label for="bulk-text">貼り付け</label>
+      <textarea class="inp" id="bulk-text" rows="9" placeholder="strategy|経営戦略マネジメント|経営戦略手法&#10;ITパスポート試験の…&#10;ア．…&#10;イ．…&#10;ウ．…&#10;エ．…&#10;正解=ウ&#10;解説：…"></textarea>
+    </div>
+    <div class="flex mb16">
+      <button class="btn btn-sm" data-act="bulk-sample">記入例を入れる</button>
+      <label class="btn btn-sm" style="cursor:pointer">JSONファイルを選ぶ
+        <input type="file" id="bulk-file" accept=".json,application/json" style="display:none">
+      </label>
+    </div>
+    <div id="bulk-preview" class="small muted"></div>
+    <div class="modal-foot">
+      <button class="btn" data-act="close-modal">キャンセル</button>
+      <button class="btn btn-primary" data-act="bulk-save">追加する</button>
+    </div>`;
+}
+act("bulk-questions", ()=>openModal(bulkModal(), {after(m){
+  const ta=m.querySelector("#bulk-text");
+  ta.addEventListener("input", ()=>bulkPreview());
+  const f=m.querySelector("#bulk-file");
+  f.addEventListener("change", ()=>{
+    const file=f.files && f.files[0]; if(!file) return;
+    const rd=new FileReader();
+    rd.onload=()=>{ ta.value=String(rd.result||""); bulkPreview(); toast("ファイルを読み込みました"); };
+    rd.onloadend=()=>{ f.value=""; };
+    rd.readAsText(file);
+  });
+}}));
+act("bulk-sample", ()=>{
+  const ta=$("#bulk-text"); if(!ta) return;
+  ta.value = [
+    "strategy|経営戦略マネジメント|経営戦略手法",
+    "自社の強みを活かして他社との差別化を図る戦略として、最も適切なものはどれか。",
+    "ア．価格を下げて販売数量を増やす",
+    "イ．他社にない技術やサービスで独自の価値を提供する",
+    "ウ．広告費を増やして認知度を高める",
+    "エ．販売チャネルを一本化する",
+    "正解=イ",
+    "解説：差別化戦略は、他社が容易にまねできない強みで価値を高める戦略です。",
+    "",
+    "management|システム監査|システム監査",
+    "システム監査人の役割として、最も適切なものはどれか。",
+    "ア．監査対象部門の業務を代行する",
+    "イ．システム開発の設計を自ら行う",
+    "ウ．独立した立場で対象を評価し意見を述べる",
+    "エ．経営会議の議長を務める",
+    "正解=ウ"
+  ].join("\n");
+  bulkPreview();
+});
+
+/* 貼り付けテキストを構造化する。空行区切り・|区切りヘッダ・全角/半角の揺れを吸収 */
+function parseBulkText(raw){
+  const text = String(raw||"").replace(/\r\n?/g,"\n").trim();
+  if(!text) return {items:[], errors:[]};
+  // JSON配列がそのまま貼られた場合
+  if(text.startsWith("[") || text.startsWith("{")){
+    try{
+      const obj = JSON.parse(text);
+      const arr = Array.isArray(obj)? obj : (obj.questions||obj.custom||obj.state&&obj.state.custom||[]);
+      if(Array.isArray(arr)) return {items: arr.map(normalizeQuestion).filter(Boolean), errors:[]};
+    }catch(e){ /* テキストとして処理 */ }
+  }
+  const blocks = text.split(/\n\s*\n/).map(b=>b.trim()).filter(Boolean);
+  const items=[], errors=[];
+  blocks.forEach((block,bi)=>{
+    const lines = block.split("\n").map(l=>l.trim()).filter(l=>l!=="");
+    let field="technology", mid="", sub="";
+    let start=0;
+    // 1行目が「分野|中分類|小分類」形式か判定
+    if(lines[0] && lines[0].includes("|")){
+      const parts = lines[0].split("|").map(s=>s.trim());
+      field = normalizeField(parts[0]);
+      mid = parts[1]||"";
+      sub = parts[2]||mid;
+      start=1;
+    }
+    const rest = lines.slice(start);
+    const choiceLines = rest.filter(l=>/^[アイウエ][\.．、:：]/.test(l));
+    const ansLine = rest.find(l=>/^正解\s*[=＝:：]/.test(l));
+    const expLine = rest.find(l=>/^(解説|explanation)\s*[=＝:：]?\s*/.test(l));
+    const head = rest.filter(l=>!/^[アイウエ][\.．、:：]/.test(l) && l!==ansLine && l!==expLine);
+    const qtext = head.join("\n").trim();
+    const c = [0,1,2,3].map(i=>{
+      const l = choiceLines[i]||"";
+      return l.replace(/^[アイウエ][\.．、:：]\s*/,"").trim();
+    });
+    let a = 0;
+    if(ansLine){
+      const m = /[アイウエ]/.exec(ansLine);
+      if(m) a = "アイウエ".indexOf(m[0]);
+      else {
+        const n = /([1-4])/.exec(ansLine);
+        if(n) a = +n[1]-1;
+      }
+    }
+    const e = expLine? expLine.replace(/^(解説|explanation)\s*[=＝:：]?\s*/,"").trim() : "";
+    if(!qtext || c.some(x=>!x)){
+      errors.push(`${bi+1}問目：問題文か選択肢が4つ揃っていません`);
+      return;
+    }
+    items.push({id:uid("U"), field, mid:mid||"自作", sub:sub||mid||"自作", q:qtext, c, a:clamp(a,0,3), e, pt:"", p:false, y:""});
+  });
+  return {items, errors};
+}
+function normalizeField(v){
+  const s=String(v||"").trim().toLowerCase();
+  if(/strategy|ストラテジ|経営|戦略/.test(s)) return "strategy";
+  if(/management|マネジメント|管理|監査/.test(s)) return "management";
+  if(/technology|テクノロジ|技術/.test(s)) return "technology";
+  return FIELD_KEYS.includes(s)? s : "technology";
+}
+function normalizeQuestion(o){
+  if(!o || typeof o!=="object") return null;
+  const c = Array.isArray(o.c)? o.c.map(String) : [];
+  if(!o.q || c.length<4 || c.slice(0,4).some(x=>!String(x).trim())) return null;
+  return {
+    id: o.id && String(o.id).startsWith("U")? o.id : uid("U"),
+    field: normalizeField(o.field), mid: o.mid||"自作", sub: o.sub||o.mid||"自作",
+    q: String(o.q), c: c.slice(0,4).map(x=>String(x)), a: clamp(+o.a||0,0,3),
+    e: o.e||"", pt: o.pt||"", p: !!o.p, y: o.y||""
+  };
+}
+function bulkPreview(){
+  const ta=$("#bulk-text"), box=$("#bulk-preview");
+  if(!ta||!box) return;
+  const {items, errors} = parseBulkText(ta.value);
+  if(!ta.value.trim()){ box.innerHTML=""; return; }
+  box.innerHTML = items.length
+    ? `<span class="pill ok">${items.length}問を追加できます</span>${errors.length?` <span class="pill ng">${errors.length}件は形式エラー</span>`:""}`
+    : `<span class="pill ng">追加できる問題がありません</span>${errors.length?`<div style="margin-top:6px;color:#9c4526">${errors.map(esc).join("<br>")}</div>`:""}`;
+}
+act("bulk-save", ()=>{
+  const ta=$("#bulk-text"); if(!ta) return;
+  const {items, errors} = parseBulkText(ta.value);
+  if(!items.length){ toast(errors.length? errors[0] : "追加できる問題がありません"); return; }
+  ST.custom = (ST.custom||[]).concat(items);
+  save(true); closeModal();
+  toast(`${items.length}問を追加しました`);
+  if(errors.length) setTimeout(()=>toast(`${errors.length}件は形式エラーで追加されませんでした`), 1400);
+  render();
 });
 act("ask-hide-question", el=>{
   const id=el.dataset.id;

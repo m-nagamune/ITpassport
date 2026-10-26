@@ -31,6 +31,10 @@ document.addEventListener("keydown", e=>{
     const map = {a:0,b:1,c:2,d:3,"1":0,"2":1,"3":2,"4":3};
     if(key in map){ e.preventDefault(); applyChoice(map[key]); return; }
   }
+  /* E / ? で「わからない」。模擬試験中も押せる（あとで戻って変更可） */
+  if((key==="e" || e.key==="?") && !locked){
+    e.preventDefault(); markUnsure(); return;
+  }
   if(e.key==="Enter" || e.key==="ArrowRight"){
     if(locked){ e.preventDefault(); ACT["next-q"](); }
     else if(s.mode==="exam" && ans){ e.preventDefault(); ACT["next-q"](); }

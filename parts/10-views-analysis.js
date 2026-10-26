@@ -74,7 +74,12 @@ VIEWS.analysis = function(){
     <div class="stat-row">
       <div class="stat"><span class="lbl">全体正答率</span><span class="val">${st.rate===null?"—":st.rate}<small>${st.rate===null?"":"%"}</small></span><span class="note">目標 ${ST.settings.targetRate}%</span></div>
       <div class="stat"><span class="lbl">セッション数</span><span class="val">${st.sessions}<small>回</small></span><span class="note">模擬試験 ${mockHist.length}回</span></div>
-      <div class="stat"><span class="lbl">復習待ちの誤答</span><span class="val">${weakQuestions().length}<small>問</small></span><span class="note"><a href="#/practice">復習する</a></span></div>
+      <div class="stat"><span class="lbl">復習待ちの誤答</span><span class="val">${weakQuestions().length}<small>問</small></span><span class="note">${st.unsure? `わからない累計 ${st.unsure}問 ／ `:""}<a href="#/practice">復習する</a></span></div>
+    </div>
+
+    <div class="note-box mt16">
+      <b>「わからない」の扱い：</b>解答せずに「わからない」を押した問題は<b>不正解</b>として正答率の分母に含め、復習対象にも残します。
+      4択から当てずっぽうで選ぶと正答率が実力より高く出てしまうため、正直に押したほうが分析が正確になります。
     </div>
 
     <section class="card" style="margin-top:16px">
@@ -185,11 +190,12 @@ VIEWS.history = function(){
         <thead><tr><th>日時</th><th>モード</th><th>範囲</th><th>問題数</th><th>正答率</th><th>所要</th><th>　</th></tr></thead>
         <tbody>${hist.map(h=>{
           const dt=new Date(h.ts);
+          const unk = (h.answers||[]).filter(a=>isUnsure(a)).length;
           return `<tr>
             <td class="num">${dt.getMonth()+1}/${dt.getDate()} ${pad2(dt.getHours())}:${pad2(dt.getMinutes())}</td>
             <td><span class="pill ${h.mode==="exam"?"past":""}">${modeName(h.mode)}</span></td>
             <td class="small">${h.field==="all"?"全分野":FIELDS[h.field]?FIELDS[h.field].short:"—"}</td>
-            <td class="num">${h.correct}/${h.count}</td>
+            <td class="num">${h.correct}/${h.count}${unk?`<span class="muted" style="font-size:10px"> (わからない${unk})</span>`:""}</td>
             <td class="num"><b style="color:${h.rate>=70?"#2f6b3a":h.rate>=50?"#a9682b":"#9c4526"}">${h.rate}%</b></td>
             <td class="num small">${fmtTime(h.sec||0)}</td>
             <td><a class="btn btn-sm" href="#/result/${h.id}">見る</a></td>
